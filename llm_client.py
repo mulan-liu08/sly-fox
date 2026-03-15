@@ -1,8 +1,11 @@
 """
 llm_client.py — Thin wrapper around the Gemini API (google-genai SDK).
 
-All LLM calls go through here so we can easily swap models or add
-retry/logging in one place.
+Uses the NEW `google-genai` package (not the deprecated `google.generativeai`).
+Install: pip install -q -U google-genai
+
+For JSON calls we use response_mime_type="application/json" so the model is
+constrained to emit valid, complete JSON — eliminates truncation/delimiter errors.
 """
 
 from __future__ import annotations
@@ -11,28 +14,27 @@ import re
 import time
 from typing import Any
 
-import google.generativeai as genai
+from google import genai
+from google.genai import types
 
 from config import GEMINI_API_KEY
 
-# Configure once at import time
-genai.configure(api_key=GEMINI_API_KEY)
+# One client, reused for every call
+_client = genai.Client(api_key=GEMINI_API_KEY)
 
-# ─── JSON extraction helper ───────────────────────────────────────────────────
+
+# ─── JSON extraction helper (fallback for non-JSON-mode calls) ────────────────
 
 def _extract_json(text: str) -> Any:
-    """Pull JSON out of a Gemini response that may be wrapped in ```json fences."""
-    # Try direct parse first
+    """Pull JSON out of a response that may be wrapped in ```json fences."""
     try:
         return json.loads(text)
     except json.JSONDecodeError:
         pass
-    # Strip markdown fences and try again
     cleaned = re.sub(r"```(?:json)?\s*", "", text).strip().rstrip("`").strip()
     try:
         return json.loads(cleaned)
     except json.JSONDecodeError:
-        # Last resort: find the first { ... } or [ ... ] block
         match = re.search(r"(\{[\s\S]*\}|\[[\s\S]*\])", cleaned)
         if match:
             return json.loads(match.group(1))
@@ -47,47 +49,40 @@ def call_llm(
     system_instruction: str | None = None,
     expect_json: bool = False,
     temperature: float = 0.9,
-    max_output_tokens: int = 4096,
+    max_output_tokens: int = 8192,   # raised — crime world state JSON needs room
     retries: int = 3,
     retry_delay: float = 2.0,
 ) -> str | Any:
     """
-    Call a Gemini model and return the text response.
+    Call a Gemini model and return the text (or parsed JSON) response.
 
-    Parameters
-    ----------
-    prompt            : The user-turn prompt.
-    model_name        : Which Gemini model to use (from config.py).
-    system_instruction: Optional system/developer prompt.
-    expect_json       : If True, parse and return the JSON object from the reply.
-    temperature       : Sampling temperature (higher = more creative).
-    max_output_tokens : Token budget for the response.
-    retries           : How many times to retry on failure.
-    retry_delay       : Seconds to wait between retries.
-
-    Returns
-    -------
-    str   if expect_json is False
-    dict/list if expect_json is True
+    When expect_json=True we set response_mime_type="application/json", which
+    forces the model to emit a complete, valid JSON object — no truncation.
     """
-    generation_config = genai.types.GenerationConfig(
-        temperature=temperature,
-        max_output_tokens=max_output_tokens,
+    config_kwargs: dict[str, Any] = {
+        "temperature": temperature,
+        "max_output_tokens": max_output_tokens,
+    }
+    if expect_json:
+        config_kwargs["response_mime_type"] = "application/json"
+
+    generate_config = types.GenerateContentConfig(
+        **config_kwargs,
+        system_instruction=system_instruction or "",
     )
-
-    kwargs: dict[str, Any] = {"generation_config": generation_config}
-    if system_instruction:
-        kwargs["system_instruction"] = system_instruction
-
-    model = genai.GenerativeModel(model_name, **kwargs)
 
     for attempt in range(1, retries + 1):
         try:
-            response = model.generate_content(prompt)
+            response = _client.models.generate_content(
+                model=model_name,
+                contents=prompt,
+                config=generate_config,
+            )
             text = response.text.strip()
             if expect_json:
                 return _extract_json(text)
             return text
+
         except Exception as exc:
             if attempt == retries:
                 raise RuntimeError(
