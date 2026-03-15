@@ -5,14 +5,17 @@ Course: CS7634 AI Storytelling
 """
 
 import os
+from dotenv import load_dotenv
 
+load_dotenv(override=True)
 # ─── Gemini API ───────────────────────────────────────────────────────────────
 # Set your key here OR export GEMINI_API_KEY=... in your shell before running.
-GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "YOUR_GEMINI_API_KEY_HERE")
+# GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "YOUR_GEMINI_API_KEY_HERE")
+GEMINI_API_KEY = os.environ['GEMINI_API_KEY']
 
 # Model choices (swap between flash and pro here)
-GEMINI_FLASH   = "gemini-2.5-flash-preview-04-17"   # faster / cheaper
-GEMINI_PRO     = "gemini-2.5-pro-preview-03-25"     # higher quality
+GEMINI_FLASH   = "gemini-2.5-flash"   # faster / cheaper
+GEMINI_PRO     = "gemini-2.5-pro"     # higher quality
 
 # Which model to use for each phase (change to GEMINI_PRO for better quality)
 CRIME_GEN_MODEL    = GEMINI_FLASH   # Phase 1: crime world state generation
