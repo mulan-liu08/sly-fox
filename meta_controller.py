@@ -28,6 +28,7 @@ from config import (
     TARGET_PLOT_POINTS,
     MIN_PLOT_POINTS,
     MAX_REGEN_ATTEMPTS,
+    PROSE_TEMPERATURE,
 )
 
 
@@ -186,7 +187,7 @@ class MetaController:
                     model_name=PLOT_GEN_MODEL,
                     system_instruction=self._system_instruction(),
                     expect_json=False,
-                    temperature=0.92,
+                    temperature=PROSE_TEMPERATURE,
                     max_output_tokens=512,
                 )
                 text = raw.strip()

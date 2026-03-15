@@ -153,7 +153,7 @@ def generate_crime_world_state(seed_theme: str = "") -> dict[str, Any]:
                 model_name=CRIME_GEN_MODEL,
                 system_instruction=CRIME_GEN_SYSTEM,
                 expect_json=True,
-                temperature=0.2,
+                temperature=0.2,   # low temp = reliable JSON schema adherence
                 max_output_tokens=8192,
             )
             _validate_raw_state(state)
