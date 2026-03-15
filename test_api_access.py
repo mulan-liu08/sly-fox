@@ -2,7 +2,7 @@ import os
 from google import genai
 from dotenv import load_dotenv
 
-load_dotenv()
+load_dotenv(override=True)
 
 try:
     gemini_key = os.environ['GEMINI_API_KEY']
@@ -12,9 +12,12 @@ except KeyError as e:
     exit()
 
 try:
-    gemini_client = genai.Client()
+    gemini_client = genai.Client(api_key=gemini_key)
     response = gemini_client.models.generate_content(
-        model="gemini-2.5-flash",
+        # model="gemini-3.1-pro-preview",
+        # model="gemini-3-flash-preview",
+        # model="gemini-2.5-flash",
+        model="gemini-2.5-pro",
         contents="Say 'ready'"
     )
     print(f"Gemini Pro Test Success! Model responded: {response.text.strip()[:50]}...")
