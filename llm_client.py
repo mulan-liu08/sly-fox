@@ -72,6 +72,7 @@ def call_llm(
     )
 
     for attempt in range(1, retries + 1):
+        time.sleep(5)
         try:
             response = _client.models.generate_content(
                 model=model_name,

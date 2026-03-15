@@ -51,6 +51,7 @@ Output schema (CrimeWorldState):
 from __future__ import annotations
 import json
 from typing import Any
+import time
 
 from llm_client import call_llm
 from config import CRIME_GEN_MODEL, MIN_SUSPECTS, MIN_CLUES
@@ -146,6 +147,7 @@ def generate_crime_world_state(seed_theme: str = "") -> dict[str, Any]:
     prompt = _build_crime_prompt(seed_theme)
 
     for attempt in range(1, MAX_REGEN_ATTEMPTS + 1):
+        time.sleep(5)
         print(f"    Attempt {attempt}/{MAX_REGEN_ATTEMPTS}…", end=" ", flush=True)
         try:
             state: dict = call_llm(
