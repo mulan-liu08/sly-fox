@@ -14,7 +14,7 @@ except KeyError as e:
 try:
     gemini_client = genai.Client()
     response = gemini_client.models.generate_content(
-        model="gemini-2.5-pro",
+        model="gemini-2.5-flash",
         contents="Say 'ready'"
     )
     print(f"Gemini Pro Test Success! Model responded: {response.text.strip()[:50]}...")
