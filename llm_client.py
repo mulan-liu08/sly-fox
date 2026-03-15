@@ -51,7 +51,7 @@ def call_llm(
     temperature: float = 0.9,
     max_output_tokens: int = 8192,   # raised — crime world state JSON needs room
     retries: int = 3,
-    retry_delay: float = 2.0,
+    retry_delay: float = 10.0,
 ) -> str | Any:
     """
     Call a Gemini model and return the text (or parsed JSON) response.
