@@ -262,14 +262,19 @@ def write_revelation_scene(
         "=== END OF INVESTIGATION STORY ===\n"
         f"...{story_tail}\n\n"
         "=== YOUR TASK ===\n"
-        f"{detective_name} assembles ONLY the physically present suspects listed above. "
-        "Do NOT seat absent suspects at the table — they may be mentioned briefly as "
-        "'cleared by confirmed alibi' without being physically present. "
-        "Write this as a DRAMATIC DIALOGUE SCENE. The detective speaks, suspects react "
-        "with spoken lines, interruptions, denials. Clear each present innocent suspect "
-        "one by one. Build to the culprit reveal. Demolish the false alibi with evidence. "
-        "The culprit denies, then breaks. End with arrest. "
-        "Do NOT write this as a monologue — it must be live back-and-forth dialogue."
+        "CRITICAL — NO CHAPTER BREAKS: Do NOT begin with a heading, a scene break, "
+        "a horizontal rule, or any text like 'The Revelation', 'Part Two', or 'Meanwhile'. "
+        "Continue the story as UNBROKEN PROSE flowing directly from the last line above. "
+        "Write a short bridging sentence or paragraph that transitions naturally from "
+        "the investigation into the assembly of suspects — as if it is the next paragraph "
+        "of the same chapter, not a new scene. "
+        "Then: the detective gathers ONLY the physically present suspects. "
+        "Absent suspects are mentioned as cleared by alibi — not physically present. "
+        "Write this as DRAMATIC DIALOGUE. The detective speaks, suspects react with spoken "
+        "lines, interruptions, denials. Clear each present innocent suspect one by one. "
+        "Build to the culprit reveal. Demolish the false alibi with evidence. "
+        "The culprit denies, then breaks down. End with their arrest. "
+        "Do NOT write this as a monologue — live back-and-forth dialogue throughout."
     )
 
     result = _safe_call_llm(
@@ -314,7 +319,7 @@ def assemble_story(
     return (
         header
         + narrative
-        + "\n\n---\n\n## The Revelation\n\n"
+        + "\n\n"
         + revelation
         + "\n\n---\n\n"
         + f"*End of story. Detective: {detective_name} | "
