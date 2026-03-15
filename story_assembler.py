@@ -180,8 +180,13 @@ def narrate_plot_points(
     )
 
     if result:
-        print("✓")
-        return result.strip()
+        deduped = _deduplicate_paragraphs(result.strip())
+        removed = result.strip().count("\n\n") - deduped.count("\n\n")
+        if removed > 0:
+            print(f"✓  (removed {removed} duplicate paragraph(s))")
+        else:
+            print("✓")
+        return deduped
     else:
         print("✗ (LLM returned empty — using raw plot points as fallback)")
         return "\n\n".join(plot_points)
@@ -325,6 +330,71 @@ def assemble_story(
         + f"*End of story. Detective: {detective_name} | "
         + f"Victim: {victim_name} | Setting: {setting}*\n"
     )
+
+
+
+# ─── Paragraph deduplication ─────────────────────────────────────────────────
+
+def _deduplicate_paragraphs(text: str, similarity_threshold: float = 0.72) -> str:
+    """
+    Remove near-duplicate paragraphs from narration output.
+
+    The LLM occasionally repeats a paragraph almost verbatim — either an
+    exact copy or a slightly expanded version with the same opening sentence.
+    This function uses two checks:
+      1. Jaccard word-overlap >= similarity_threshold (default 0.72)
+      2. Identical first sentence (catches "expanded repeat" pattern where
+         the second version just adds a sentence or two to the first)
+
+    Keeps the LONGER of the two when a duplicate is found (so we keep the
+    expanded version, not the stub), then continues.
+    """
+    import re
+
+    def first_sentence(para: str) -> str:
+        m = re.split(r'(?<=[.!?])\s', para.strip(), maxsplit=1)
+        return m[0].strip().lower() if m else para.strip().lower()
+
+    paragraphs = [p.strip() for p in text.split("\n\n") if p.strip()]
+    # Store (words_set, first_sentence, full_text) for each kept paragraph
+    seen: list[tuple] = []
+    kept: list[str] = []
+
+    for para in paragraphs:
+        words = set(para.lower().split())
+        fs    = first_sentence(para)
+        is_duplicate = False
+        dup_idx = -1
+
+        for i, (prev_words, prev_fs, _) in enumerate(seen):
+            # Check 1: same opening sentence
+            if fs and prev_fs and fs == prev_fs:
+                is_duplicate = True
+                dup_idx = i
+                break
+            # Check 2: high word overlap
+            if not words or not prev_words:
+                continue
+            intersection = len(words & prev_words)
+            union = len(words | prev_words)
+            jaccard = intersection / union if union > 0 else 0
+            if jaccard >= similarity_threshold:
+                is_duplicate = True
+                dup_idx = i
+                break
+
+        if is_duplicate and dup_idx >= 0:
+            # Keep the longer version
+            _, _, prev_text = seen[dup_idx]
+            if len(para) > len(prev_text):
+                kept[dup_idx] = para
+                seen[dup_idx] = (words, fs, para)
+            # else: keep original, discard new
+        else:
+            kept.append(para)
+            seen.append((words, fs, para))
+
+    return "\n\n".join(kept)
 
 
 # ─── Safe LLM call (handles NoneType from Gemini) ────────────────────────────
