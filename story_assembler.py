@@ -74,7 +74,7 @@ Victim: {victim_name}
 Detective: {detective_name}
 
 Below are {len(plot_points)} plot points in order. Expand them into ONE continuous, \
-unbroken third-person narrative. Each plot point should become 1–3 paragraphs. \
+unbroken third-person narrative. Each plot point should become 1–3 paragraphs, making sure to include dialogue as relevant. \
 Do NOT number the paragraphs. Do NOT restart the story partway through. \
 Introduce the detective only ONCE at the very beginning. \
 Transition smoothly between every plot point. \

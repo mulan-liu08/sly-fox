@@ -20,7 +20,7 @@ GEMINI_PRO     = "gemini-2.5-pro"     # higher quality
 # Which model to use for each phase (change to GEMINI_PRO for better quality)
 CRIME_GEN_MODEL    = GEMINI_FLASH   # Phase 1: crime world state generation
 PLOT_GEN_MODEL     = GEMINI_FLASH   # Phase 2: iterative suspense loop
-NARRATOR_MODEL     = GEMINI_FLASH   # Phase 3: fluent narration (swap to GEMINI_PRO for final demo)
+NARRATOR_MODEL     = GEMINI_PRO   # Phase 3: fluent narration (swap to GEMINI_PRO for final demo)
 
 # ─── Temperature settings ────────────────────────────────────────────────────
 # Low temp for structured JSON output (schema adherence is critical).
