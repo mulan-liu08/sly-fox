@@ -220,29 +220,14 @@ Three layers:
 - Failed plot points are retried with the rejection reason in the prompt, nudging
   the LLM away from the violation.
 
-### Swapping to Gemini Pro
-
-Change these lines in `config.py`:
-
-```python
-CRIME_GEN_MODEL = GEMINI_PRO
-PLOT_GEN_MODEL  = GEMINI_PRO
-NARRATOR_MODEL  = GEMINI_PRO
-```
-
-Flash is faster and cheaper for development; Pro gives noticeably better
-prose quality for the final story.
-
----
-
-## Template-Specific Questions (addressed)
+## Template-Specific Questions
 
 **Q: If you pre-generate crime details, how do you adapt the technique?**
 
 A: We generate ALL details in Phase 1 and store them in a JSON "Crime World State".
-We then **strategically reveal** details to the LLM through the 18 prompts in Phase 2,
+We then strategically reveal details to the LLM through the 18 prompts in Phase 2,
 ordered for suspense rather than generation order. The LLM controls detective
-emotions/reasoning/dialogue; we control facts. The `SecretTracker` class assigns
+emotions/reasoning/dialogue; we control facts. The SecretTracker class assigns
 each secret a minimum step number before it may appear.
 
 **Q: 3-phase validation?**
@@ -273,9 +258,6 @@ each secret a minimum step number before it may appear.
 
 [Narrated investigation — ~15-18 paragraphs covering all plot points]
 
----
-
-## The Revelation
 
 [Detective's climactic explanation tying every clue back to the truth]
 
