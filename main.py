@@ -1,13 +1,4 @@
 """
-main.py — Sly Fox Crime Mystery Generator
-Team: Sly Fox (Samreen Farooqui, Mulan Liu, Keegan Thompson)
-Course: CS7634 AI Storytelling
-
-Orchestrates:
-  Phase 1 — Crime world state generation (crime_generator.py)
-  Phase 2 — Iterative suspense loop     (meta_controller.py)
-  Phase 3 — Story assembly              (story_assembler.py)
-
 Usage:
     python main.py                      # Run with default settings
     python main.py --theme "art heist"  # Seed the crime with a theme
@@ -30,8 +21,6 @@ from validators import validate_crime_world_state, summarise_crime_state
 from meta_controller import MetaController
 from story_assembler import assemble_story
 
-
-# ─── CLI ─────────────────────────────────────────────────────────────────────
 
 def parse_args() -> argparse.Namespace:
     p = argparse.ArgumentParser(
@@ -62,75 +51,64 @@ def parse_args() -> argparse.Namespace:
     return p.parse_args()
 
 
-# ─── Main ────────────────────────────────────────────────────────────────────
-
 def main() -> None:
     args = parse_args()
 
     print("=" * 64)
-    print("  🦊  Sly Fox — AI Crime Mystery Generator")
-    print("      CS7634 AI Storytelling | Team: Sly Fox")
+    print("Sly Fox — AI Crime Mystery Generator")
+    print("CS7634 AI Storytelling | Team: Sly Fox")
     print("=" * 64)
     print()
 
     run_id  = datetime.now().strftime("%Y%m%d_%H%M%S")
     t_start = time.time()
 
-    # ── Phase 1: Crime world state ────────────────────────────────────────────
-
     if args.load_state:
-        print(f"📂  Loading crime world state from {args.load_state!r}…")
+        print(f"Loading crime world state from {args.load_state!r}…")
         with open(args.load_state, "r", encoding="utf-8") as f:
             state = json.load(f)
-        print(f"    Loaded.  Summary: {summarise_crime_state(state)}")
+        print(f" Loaded.  Summary: {summarise_crime_state(state)}")
     else:
         state = generate_crime_world_state(seed_theme=args.theme)
 
-        print("\n🔍  Validating crime world state…")
+        print("\nValidating crime world state…")
         try:
             warnings = validate_crime_world_state(state)
             if warnings:
-                print("    ⚠ Warnings:")
+                print("Warnings:")
                 for w in warnings:
                     print(f"      • {w}")
             else:
-                print("    ✓ All validation checks passed.")
+                print("All validation checks passed.")
         except ValueError as exc:
-            print(f"    ✗ VALIDATION FAILED: {exc}")
-            print("    Exiting — regenerate or fix the state manually.")
+            print(f"VALIDATION FAILED: {exc}")
+            print("Exiting — regenerate or fix the state manually.")
             sys.exit(1)
 
-        print(f"\n    Summary: {summarise_crime_state(state)}")
+        print(f"\n Summary: {summarise_crime_state(state)}")
 
         if args.save_state:
             state_path = os.path.join(OUTPUT_DIR, f"crime_state_{run_id}.json")
             with open(state_path, "w", encoding="utf-8") as f:
                 json.dump(state, f, indent=2)
-            print(f"    💾  Crime world state saved → {state_path}")
-
-    # ── Phase 2: Iterative suspense loop ──────────────────────────────────────
+            print(f"Crime world state saved → {state_path}")
 
     mc = MetaController(state)
     plot_points = mc.run()
 
-    # ── Phase 3: Story assembly ───────────────────────────────────────────────
-
-    print(f"\n📖  Phase 3 — Assembling story…")
+    print(f"\nPhase 3 — Assembling story…")
     story = assemble_story(state, plot_points)
-
-    # ── Save output ───────────────────────────────────────────────────────────
 
     out_path = args.output or os.path.join(OUTPUT_DIR, f"mystery_{run_id}.md")
     with open(out_path, "w", encoding="utf-8") as f:
         f.write(story)
 
     elapsed = time.time() - t_start
-    print(f"\n✅  Done in {elapsed:.1f}s")
-    print(f"📄  Story saved → {out_path}")
-    print(f"    Length: {len(story):,} chars, ~{len(story.split()):,} words")
+    print(f"\nDone in {elapsed:.1f}s")
+    print(f"Story saved → {out_path}")
+    print(f"Length: {len(story):,} chars, ~{len(story.split()):,} words")
     print()
 
-    # Also print first 1000 chars as preview
     print("─" * 64)
     print("STORY PREVIEW:")
     print("─" * 64)

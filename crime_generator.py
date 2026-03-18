@@ -1,10 +1,4 @@
 """
-crime_generator.py — Phase 1: Generate the hidden crime world state.
-
-This module produces the "ground truth" crime world state (JSON) BEFORE
-the investigation story begins. The state is treated as immutable — the
-investigation story must reference it but never contradict it.
-
 Output schema (CrimeWorldState):
 {
   "setting": { "location": str, "date": str, "time_of_crime": str },
@@ -57,8 +51,6 @@ from llm_client import call_llm
 from config import CRIME_GEN_MODEL, MIN_SUSPECTS, MIN_CLUES
 
 
-# ─── System instruction ───────────────────────────────────────────────────────
-
 CRIME_GEN_SYSTEM = """\
 You are a master crime fiction writer and game designer specializing in \
 intricate murder mysteries. Your job is to design the hidden GROUND TRUTH \
@@ -67,8 +59,6 @@ uncover. Be creative, specific, and internally consistent. Every detail you \
 invent becomes a binding constraint for the rest of the story.
 """
 
-
-# ─── Main prompt ─────────────────────────────────────────────────────────────
 
 def _build_crime_prompt(seed_theme: str = "") -> str:
     theme_hint = f"Theme hint: {seed_theme}. " if seed_theme else ""
@@ -132,37 +122,29 @@ JSON Schema:
 """
 
 
-# ─── Public API ──────────────────────────────────────────────────────────────
-
 def generate_crime_world_state(seed_theme: str = "") -> dict[str, Any]:
-    """
-    Call the LLM to generate the full crime world state.
-
-    Returns the parsed JSON dict.
-    Raises RuntimeError if validation fails after MAX_REGEN_ATTEMPTS.
-    """
-    print("📋  Phase 1 — Generating crime world state…")
+    print("Phase 1 — Generating crime world state…")
 
     from config import MAX_REGEN_ATTEMPTS
     prompt = _build_crime_prompt(seed_theme)
 
     for attempt in range(1, MAX_REGEN_ATTEMPTS + 1):
         time.sleep(2)
-        print(f"    Attempt {attempt}/{MAX_REGEN_ATTEMPTS}…", end=" ", flush=True)
+        print(f"Attempt {attempt}/{MAX_REGEN_ATTEMPTS}…", end=" ", flush=True)
         try:
             state: dict = call_llm(
                 prompt=prompt,
                 model_name=CRIME_GEN_MODEL,
                 system_instruction=CRIME_GEN_SYSTEM,
                 expect_json=True,
-                temperature=0.2,   # low temp = reliable JSON schema adherence
+                temperature=0.2,
                 max_output_tokens=8192,
             )
             _validate_raw_state(state)
-            print("✓")
+            print("Good")
             return state
         except (ValueError, KeyError, RuntimeError) as exc:
-            print(f"✗  ({exc})")
+            print(f"Bad ({exc})")
             if attempt == MAX_REGEN_ATTEMPTS:
                 raise RuntimeError(
                     "Crime world state generation failed after all attempts."
@@ -172,7 +154,6 @@ def generate_crime_world_state(seed_theme: str = "") -> dict[str, Any]:
 
 
 def _validate_raw_state(state: dict) -> None:
-    """Light structural validation — full semantic validation is in validators.py."""
     required_top = ["setting", "victim", "culprit", "suspects", "clues",
                     "timeline", "hidden_backstory"]
     for key in required_top:
@@ -187,7 +168,6 @@ def _validate_raw_state(state: dict) -> None:
         raise ValueError(
             f"Need ≥{MIN_CLUES} clues, got {len(state['clues'])}"
         )
-    # Every suspect must have missing_element set
     for s in state["suspects"]:
         if s.get("missing_element") not in ("means", "motive", "opportunity"):
             raise ValueError(

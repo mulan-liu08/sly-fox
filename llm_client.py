@@ -1,13 +1,3 @@
-"""
-llm_client.py — Thin wrapper around the Gemini API (google-genai SDK).
-
-Uses the NEW `google-genai` package (not the deprecated `google.generativeai`).
-Install: pip install -q -U google-genai
-
-For JSON calls we use response_mime_type="application/json" so the model is
-constrained to emit valid, complete JSON — eliminates truncation/delimiter errors.
-"""
-
 from __future__ import annotations
 import json
 import re
@@ -19,14 +9,9 @@ from google.genai import types
 
 from config import GEMINI_API_KEY
 
-# One client, reused for every call
 _client = genai.Client(api_key=GEMINI_API_KEY)
 
-
-# ─── JSON extraction helper (fallback for non-JSON-mode calls) ────────────────
-
 def _extract_json(text: str) -> Any:
-    """Pull JSON out of a response that may be wrapped in ```json fences."""
     try:
         return json.loads(text)
     except json.JSONDecodeError:
@@ -40,25 +25,16 @@ def _extract_json(text: str) -> Any:
             return json.loads(match.group(1))
     raise ValueError(f"Could not extract JSON from response:\n{text[:500]}")
 
-
-# ─── Core call function ───────────────────────────────────────────────────────
-
 def call_llm(
     prompt: str,
     model_name: str,
     system_instruction: str | None = None,
     expect_json: bool = False,
     temperature: float = 0.9,
-    max_output_tokens: int = 8192,   # raised — crime world state JSON needs room
+    max_output_tokens: int = 8192,
     retries: int = 3,
     retry_delay: float = 2.0,
 ) -> str | Any:
-    """
-    Call a Gemini model and return the text (or parsed JSON) response.
-
-    When expect_json=True we set response_mime_type="application/json", which
-    forces the model to emit a complete, valid JSON object — no truncation.
-    """
     config_kwargs: dict[str, Any] = {
         "temperature": temperature,
         "max_output_tokens": max_output_tokens,

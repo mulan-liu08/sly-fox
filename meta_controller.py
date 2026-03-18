@@ -1,9 +1,4 @@
 """
-meta_controller.py — Phase 2: Iterative suspense loop.
-
-The MetaController drives the detective's investigation through 15–18 plot
-points, building suspense according to this arc:
-
   Steps 1–3   : ESTABLISH   — scene, detective intro, first look at crime scene
   Steps 4–6   : ESCALATE    — initial suspects, early clues, first red herring
   Steps 7–10  : PIVOT       — obstacles, false leads, alibi checks, tension rises
@@ -31,11 +26,7 @@ from config import (
     PROSE_TEMPERATURE,
 )
 
-
-# ─── Narrative arc definitions ────────────────────────────────────────────────
-
 def _arc_instruction(step: int, total: int) -> str:
-    """Return a directive for the current point in the narrative arc."""
     frac = step / total
     if frac <= 0.20:
         return (
@@ -70,14 +61,11 @@ def _arc_instruction(step: int, total: int) -> str:
         )
 
 
-# ─── Context builder ──────────────────────────────────────────────────────────
-
 def _build_context_summary(
     state: dict[str, Any],
     plot_points: list[str],
     revealed_clues: list[str],
 ) -> str:
-    """Build a compact context block to feed into each step prompt."""
     victim = state["victim"]["name"]
     setting = state["setting"]["location"]
     date    = state["setting"]["date"]
@@ -120,16 +108,7 @@ Clues discovered so far by the detective:
 """
 
 
-# ─── Main MetaController ─────────────────────────────────────────────────────
-
 class MetaController:
-    """
-    Drives the iterative suspense loop.
-
-    Usage:
-        mc = MetaController(crime_world_state)
-        plot_points = mc.run()
-    """
 
     def __init__(self, state: dict[str, Any]):
         self.state    = state
@@ -138,27 +117,20 @@ class MetaController:
         self.revealed_clues: list[str] = []
 
     def run(self) -> list[str]:
-        """
-        Execute the iterative loop until TARGET_PLOT_POINTS are accumulated
-        (or MIN_PLOT_POINTS if we keep hitting failures).
-
-        Returns the list of validated plot-point strings.
-        """
-        print(f"\n🔄  Phase 2 — Iterative suspense loop (target: {TARGET_PLOT_POINTS} plot points)…")
+        print(f"\nPhase 2 — Iterative suspense loop (target: {TARGET_PLOT_POINTS} plot points)…")
 
         step = 1
         while len(self.plot_points) < TARGET_PLOT_POINTS:
-            print(f"    Step {step:02d}/{TARGET_PLOT_POINTS} → ", end="", flush=True)
+            print(f"Step {step:02d}/{TARGET_PLOT_POINTS} → ", end="", flush=True)
             plot_point = self._generate_one_step(step)
             if plot_point:
                 self.plot_points.append(plot_point)
                 self._update_clue_reveals(plot_point)
-                print(f"✓  [{len(self.plot_points)} accumulated]")
+                print(f"Good [{len(self.plot_points)} accumulated]")
             else:
-                print(f"✗  (skipped after {MAX_REGEN_ATTEMPTS} attempts)")
+                print(f"Bad (skipped after {MAX_REGEN_ATTEMPTS} attempts)")
             step += 1
 
-            # Safety valve — don't loop forever
             if step > TARGET_PLOT_POINTS + 10:
                 break
 
@@ -167,13 +139,10 @@ class MetaController:
             raise RuntimeError(
                 f"Only generated {count} valid plot points (minimum is {MIN_PLOT_POINTS})"
             )
-        print(f"  ✅  Accumulated {count} plot points.")
+        print(f"Accumulated {count} plot points.")
         return self.plot_points
 
-    # ── Private ───────────────────────────────────────────────────────────────
-
     def _generate_one_step(self, step: int) -> str | None:
-        """Try to generate one valid plot point, retrying on failure."""
         arc = _arc_instruction(step, TARGET_PLOT_POINTS)
         context = _build_context_summary(
             self.state, self.plot_points, self.revealed_clues
@@ -195,7 +164,6 @@ class MetaController:
                 if result.is_valid:
                     return text
                 else:
-                    # Pass the rejection reason back as a hint on next attempt
                     context = context + f"\n[REJECTED attempt {attempt}: {result.reason}]\n"
             except RuntimeError as exc:
                 print(f"(LLM error: {exc})", end="", flush=True)
@@ -207,7 +175,7 @@ class MetaController:
         extra = ""
         if attempt > 1:
             extra = (
-                f"\n⚠ Previous attempt was rejected. Try a DIFFERENT kind of event "
+                f"\nPrevious attempt was rejected. Try a DIFFERENT kind of event "
                 f"(different obstacle type, different character focus).\n"
             )
 
@@ -237,10 +205,8 @@ Output ONLY the plot point text. No labels, no numbering, no preamble.
         )
 
     def _update_clue_reveals(self, text: str) -> None:
-        """Check if a clue was mentioned in the plot point and mark it revealed."""
         lower = text.lower()
         for clue in self.state.get("clues", []):
-            # Check first 30 chars of description as a fingerprint
             fingerprint = clue["description"].lower()[:30]
             if fingerprint in lower:
                 if clue["id"] not in self.revealed_clues:

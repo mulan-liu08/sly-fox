@@ -1,6 +1,4 @@
 """
-tests/test_components.py — Unit tests for non-LLM components.
-
 Run with:  python -m pytest tests/ -v
 or:        python tests/test_components.py
 """
@@ -11,9 +9,6 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
 from validators import validate_crime_world_state, summarise_crime_state
 from consistency_checker import ConsistencyChecker, SecretTracker, EventMemoryBuffer
-
-
-# ─── Shared fixture ───────────────────────────────────────────────────────────
 
 SAMPLE_STATE = {
     "setting": {
@@ -166,9 +161,6 @@ SAMPLE_STATE = {
     )
 }
 
-
-# ─── Tests ────────────────────────────────────────────────────────────────────
-
 def test_validator_passes_valid_state():
     warnings = validate_crime_world_state(SAMPLE_STATE)
     print(f"  Warnings: {warnings}")
@@ -233,7 +225,7 @@ def test_consistency_checker_blocks_early_culprit_reveal():
     checker = ConsistencyChecker(SAMPLE_STATE, target_plot_points=18)
     culprit_name = SAMPLE_STATE["culprit"]["name"]
     text = f"The detective concluded that {culprit_name} was the murderer."
-    result = checker.check(text, step=4)  # Too early
+    result = checker.check(text, step=4)
     assert not result.is_valid
     print(f"  PASS: ConsistencyChecker blocked early culprit reveal → {result.reason}")
 
@@ -242,7 +234,7 @@ def test_consistency_checker_allows_late_culprit_reveal():
     checker = ConsistencyChecker(SAMPLE_STATE, target_plot_points=18)
     culprit_name = SAMPLE_STATE["culprit"]["name"]
     text = f"The detective concluded that {culprit_name} was the murderer."
-    result = checker.check(text, step=16)  # Late enough
+    result = checker.check(text, step=16)
     assert result.is_valid
     print(f"  PASS: ConsistencyChecker allows late culprit reveal → {result.reason}")
 
@@ -252,9 +244,6 @@ def test_summarise_crime_state():
     assert "Diana Hargrove" in summary
     assert "Reginald Hargrove" in summary
     print(f"  PASS: summarise_crime_state → {summary}")
-
-
-# ─── Runner ───────────────────────────────────────────────────────────────────
 
 if __name__ == "__main__":
     tests = [
@@ -272,12 +261,12 @@ if __name__ == "__main__":
     passed = 0
     failed = 0
     for test in tests:
-        print(f"\n▶ {test.__name__}")
+        print(f"\n {test.__name__}")
         try:
             test()
             passed += 1
         except AssertionError:
-            print("  FAIL (assertion)")
+            print("FAIL (assertion)")
             failed += 1
         except Exception as exc:
             print(f"  ERROR: {exc}")

@@ -1,11 +1,4 @@
 """
-story_assembler.py — Phase 3: Assemble the final story.
-
-Two sub-components:
-  1. FluentNarrator   — expands raw plot points into polished prose WITH dialogue
-  2. RevelationWriter — generates the detective's final explanation scene
-
-Key design decisions:
   - Crime world state injected into BOTH narration and revelation prompts so
     the LLM cannot invent new evidence, clue names, or murder methods
   - Suspect roster with alibis passed explicitly so the revelation assembles
@@ -24,8 +17,6 @@ from typing import Any
 from llm_client import call_llm
 from config import NARRATOR_MODEL, PROSE_TEMPERATURE
 
-
-# ─── System instructions ──────────────────────────────────────────────────────
 
 NARRATOR_SYSTEM = (
     "You are a literary crime fiction author in the tradition of Agatha Christie "
@@ -79,10 +70,7 @@ REVELATION_SYSTEM = (
 )
 
 
-# ─── helpers to build crime world context blocks ─────────────────────────────
-
 def _build_clue_block(clues: list[dict]) -> str:
-    """Plain-language clue list with no IDs — for the narration prompt."""
     lines = []
     for c in clues:
         line = f"  - {c['description']} (found at: {c['location']})"
@@ -93,11 +81,9 @@ def _build_clue_block(clues: list[dict]) -> str:
 
 
 def _build_suspect_block(suspects: list[dict]) -> str:
-    """Suspect roster with alibi and physical-presence flag — for both prompts."""
     lines = []
     for s in suspects:
         alibi = s.get("alibi", "unknown")
-        # Flag suspects whose alibis place them physically elsewhere
         out_of_town = any(
             phrase in alibi.lower()
             for phrase in ["conference", "stanford", "university", "flight",
@@ -113,17 +99,11 @@ def _build_suspect_block(suspects: list[dict]) -> str:
     return "\n".join(lines)
 
 
-# ─── Fluent Narrator ─────────────────────────────────────────────────────────
-
 def narrate_plot_points(
     plot_points: list[str],
     state: dict[str, Any],
 ) -> str:
-    """
-    Expand ALL raw plot points into one continuous narrative in a single LLM call.
-    The full crime world state is injected so the LLM cannot invent new facts.
-    """
-    print("\n✍️   Phase 3a — Fluent narration (single call)…", end=" ", flush=True)
+    print("\nPhase 3a — Fluent narration (single call)…", end=" ", flush=True)
 
     detective_name = _get_detective_name(state)
     victim_name    = state["victim"]["name"]
@@ -183,27 +163,20 @@ def narrate_plot_points(
         deduped = _deduplicate_paragraphs(result.strip())
         removed = result.strip().count("\n\n") - deduped.count("\n\n")
         if removed > 0:
-            print(f"✓  (removed {removed} duplicate paragraph(s))")
+            print(f"Good (removed {removed} duplicate paragraph(s))")
         else:
-            print("✓")
+            print("Good")
         return deduped
     else:
-        print("✗ (LLM returned empty — using raw plot points as fallback)")
+        print("Bad(LLM returned empty — using raw plot points as fallback)")
         return "\n\n".join(plot_points)
 
-
-# ─── Revelation Scene Writer ──────────────────────────────────────────────────
 
 def write_revelation_scene(
     state: dict[str, Any],
     story_so_far: str,
 ) -> str:
-    """
-    Generate the detective's final revelation scene.
-    Only physically present suspects are seated at the table.
-    Clue IDs are stripped so they don't leak into prose.
-    """
-    print("    Writing revelation scene…", end=" ", flush=True)
+    print("Writing revelation scene…", end=" ", flush=True)
 
     culprit        = state["culprit"]
     victim         = state["victim"]
@@ -212,7 +185,6 @@ def write_revelation_scene(
     backstory      = state.get("hidden_backstory", "")
     detective_name = _get_detective_name(state)
 
-    # Split suspects into present vs. absent based on alibi content
     present_suspects = []
     absent_suspects  = []
     out_of_town_phrases = [
@@ -290,18 +262,16 @@ def write_revelation_scene(
     )
 
     if result:
-        print("✓")
+        print("Good")
         return result.strip()
     else:
-        print("✗ (LLM returned empty — using backstory fallback)")
+        print("Bad (LLM returned empty — using backstory fallback)")
         return (
             f"The detective gathered the suspects and laid out the truth.\n\n"
             f"{backstory}\n\n"
             f"The culprit, {culprit['name']}, was arrested."
         )
 
-
-# ─── Full story assembly ──────────────────────────────────────────────────────
 
 def assemble_story(
     state: dict[str, Any],
@@ -332,23 +302,7 @@ def assemble_story(
     )
 
 
-
-# ─── Paragraph deduplication ─────────────────────────────────────────────────
-
 def _deduplicate_paragraphs(text: str, similarity_threshold: float = 0.72) -> str:
-    """
-    Remove near-duplicate paragraphs from narration output.
-
-    The LLM occasionally repeats a paragraph almost verbatim — either an
-    exact copy or a slightly expanded version with the same opening sentence.
-    This function uses two checks:
-      1. Jaccard word-overlap >= similarity_threshold (default 0.72)
-      2. Identical first sentence (catches "expanded repeat" pattern where
-         the second version just adds a sentence or two to the first)
-
-    Keeps the LONGER of the two when a duplicate is found (so we keep the
-    expanded version, not the stub), then continues.
-    """
     import re
 
     def first_sentence(para: str) -> str:
@@ -356,7 +310,6 @@ def _deduplicate_paragraphs(text: str, similarity_threshold: float = 0.72) -> st
         return m[0].strip().lower() if m else para.strip().lower()
 
     paragraphs = [p.strip() for p in text.split("\n\n") if p.strip()]
-    # Store (words_set, first_sentence, full_text) for each kept paragraph
     seen: list[tuple] = []
     kept: list[str] = []
 
@@ -367,12 +320,10 @@ def _deduplicate_paragraphs(text: str, similarity_threshold: float = 0.72) -> st
         dup_idx = -1
 
         for i, (prev_words, prev_fs, _) in enumerate(seen):
-            # Check 1: same opening sentence
             if fs and prev_fs and fs == prev_fs:
                 is_duplicate = True
                 dup_idx = i
                 break
-            # Check 2: high word overlap
             if not words or not prev_words:
                 continue
             intersection = len(words & prev_words)
@@ -384,20 +335,16 @@ def _deduplicate_paragraphs(text: str, similarity_threshold: float = 0.72) -> st
                 break
 
         if is_duplicate and dup_idx >= 0:
-            # Keep the longer version
             _, _, prev_text = seen[dup_idx]
             if len(para) > len(prev_text):
                 kept[dup_idx] = para
                 seen[dup_idx] = (words, fs, para)
-            # else: keep original, discard new
         else:
             kept.append(para)
             seen.append((words, fs, para))
 
     return "\n\n".join(kept)
 
-
-# ─── Safe LLM call (handles NoneType from Gemini) ────────────────────────────
 
 def _safe_call_llm(
     prompt: str,
@@ -424,9 +371,6 @@ def _safe_call_llm(
             print(f"\n  [narrator] attempt {attempt} failed: {exc}",
                   end=" ", flush=True)
     return None
-
-
-# ─── Helper ───────────────────────────────────────────────────────────────────
 
 def _get_detective_name(state: dict[str, Any]) -> str:
     return state.get("detective", {}).get("name", "Detective Morgan Reyes")

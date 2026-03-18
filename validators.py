@@ -1,12 +1,7 @@
 """
-validators.py — 3-Phase validation of the crime world state.
-
 Phase 1 — Structure:   No unconnected clues, red herrings are plausible.
 Phase 2 — Complexity:  Counts meet the rubric thresholds.
 Phase 3 — Consistency: Alibis, culprit MMO, timeline, no contradictions.
-
-All functions raise ValueError with a descriptive message on failure so the
-caller (crime_generator.py or main.py) can decide whether to regenerate.
 """
 
 from __future__ import annotations
@@ -20,15 +15,7 @@ from config import (
 )
 
 
-# ─── Public entry point ───────────────────────────────────────────────────────
-
 def validate_crime_world_state(state: dict[str, Any]) -> list[str]:
-    """
-    Run all three validation phases.
-
-    Returns a list of warning strings (non-fatal issues).
-    Raises ValueError on fatal issues.
-    """
     warnings: list[str] = []
     warnings += _phase1_structure(state)
     warnings += _phase2_complexity(state)
@@ -36,26 +23,21 @@ def validate_crime_world_state(state: dict[str, Any]) -> list[str]:
     return warnings
 
 
-# ─── Phase 1 — Structure ─────────────────────────────────────────────────────
-
 def _phase1_structure(state: dict) -> list[str]:
     warnings: list[str] = []
     clues = state.get("clues", [])
     clue_ids = {c["id"] for c in clues}
 
     for clue in clues:
-        # Prerequisite clue must exist
         prereq = clue.get("prerequisite_clue_id")
         if prereq and prereq not in clue_ids:
             raise ValueError(
                 f"Clue {clue['id']!r} references non-existent prerequisite {prereq!r}"
             )
-        # Red herrings must have an explanation
         if clue.get("is_red_herring") and not clue.get("red_herring_explanation"):
             raise ValueError(
                 f"Red herring clue {clue['id']!r} has no red_herring_explanation"
             )
-        # points_to must be a known name
         known_names = _all_character_names(state)
         if clue.get("points_to") not in known_names and clue.get("points_to") != "culprit":
             warnings.append(
@@ -66,18 +48,14 @@ def _phase1_structure(state: dict) -> list[str]:
     return warnings
 
 
-# ─── Phase 2 — Complexity ────────────────────────────────────────────────────
-
 def _phase2_complexity(state: dict) -> list[str]:
     warnings: list[str] = []
     clues = state.get("clues", [])
     suspects = state.get("suspects", [])
 
-    # Clue count
     if len(clues) < MIN_CLUES:
         raise ValueError(f"Need ≥{MIN_CLUES} clues; found {len(clues)}")
 
-    # Red herring ratio (1–2 per 5 clues)
     rh_count = sum(1 for c in clues if c.get("is_red_herring"))
     min_rh = (len(clues) // 5) * RED_HERRING_RATIO[0]
     max_rh = (len(clues) // 5) * RED_HERRING_RATIO[1]
@@ -90,18 +68,15 @@ def _phase2_complexity(state: dict) -> list[str]:
             f"More red herrings than expected: {rh_count} vs max ~{max_rh}"
         )
 
-    # Chained clues (at least 2 must have prerequisites)
     chained = sum(1 for c in clues if c.get("prerequisite_clue_id"))
     if chained < 2:
         raise ValueError(
             f"Need ≥2 chained clues; found {chained}"
         )
 
-    # Suspect count
     if len(suspects) < MIN_SUSPECTS:
         raise ValueError(f"Need ≥{MIN_SUSPECTS} suspects; found {len(suspects)}")
 
-    # Each suspect must be missing exactly one MMO element
     for s in suspects:
         missing = [k for k in ("means", "motive", "opportunity") if not s.get(k)]
         if len(missing) == 0:
@@ -118,47 +93,37 @@ def _phase2_complexity(state: dict) -> list[str]:
     return warnings
 
 
-# ─── Phase 3 — Consistency ───────────────────────────────────────────────────
-
 def _phase3_consistency(state: dict) -> list[str]:
     warnings: list[str] = []
     culprit = state.get("culprit", {})
 
-    # Culprit must have all three MMO
     for element in ("means", "motive", "opportunity"):
         if not culprit.get(element):
             raise ValueError(
                 f"Culprit {culprit.get('name')!r} is missing {element!r}"
             )
 
-    # Culprit method must be specified
     if not culprit.get("method"):
         raise ValueError("Culprit has no method of murder specified")
 
-    # Culprit alibi must exist (it's false, but must be present)
     if not culprit.get("alibi"):
         raise ValueError("Culprit has no (false) alibi — they need one to be a suspect")
 
-    # Timeline must have at least 3 events
     timeline = state.get("timeline", [])
     if len(timeline) < 3:
         warnings.append("Timeline has fewer than 3 events — consider adding more detail")
 
-    # No two clues can have the same id
     clues = state.get("clues", [])
     ids = [c["id"] for c in clues]
     if len(ids) != len(set(ids)):
         raise ValueError("Duplicate clue IDs detected")
 
-    # Victim must be a real character with a name
     victim = state.get("victim", {})
     if not victim.get("name"):
         raise ValueError("Victim has no name")
 
     return warnings
 
-
-# ─── Helper ──────────────────────────────────────────────────────────────────
 
 def _all_character_names(state: dict) -> set[str]:
     names = set()
@@ -170,10 +135,7 @@ def _all_character_names(state: dict) -> set[str]:
     return names
 
 
-# ─── Pretty print summary ────────────────────────────────────────────────────
-
 def summarise_crime_state(state: dict) -> str:
-    """Return a human-readable one-liner summary for logging."""
     culprit_name = state.get("culprit", {}).get("name", "?")
     victim_name  = state.get("victim", {}).get("name", "?")
     n_suspects   = len(state.get("suspects", []))
