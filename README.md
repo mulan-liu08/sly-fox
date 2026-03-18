@@ -169,6 +169,15 @@ These tests cover:
 - No Gemini API calls required
 
 ---
+Success Metrics:
+- Phase 1: Valid clue dependencies and resolvable red herrings
+- Phase 2: 5+ essential clues and suspect viability is balanced
+- Phase 3: Coherent Alibis and means-motive-opportunity checks pass
+Failure Metrics:
+- The crime is too obvious (its solved in <10 steps)
+- The red herrings don't resolve very well
+- The suspect viability is too unbalanced
+- The Story lacks suspense
 
 ## File Structure
 
