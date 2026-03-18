@@ -235,19 +235,6 @@ each secret a minimum step number before it may appear.
 - Phase 2 (Complexity): ≥5 clues, 1-2 RH per 5, ≥2 chained, ≥4 suspects, each missing one MMO.
 - Phase 3 (Consistency): Culprit has all 3 MMO, innocent suspects each lack one, no duplicate IDs, victim named.
 
----
-
-## Troubleshooting
-
-| Problem | Fix |
-|---|---|
-| `google.api_core.exceptions.InvalidArgument` | Check your API key is set correctly |
-| `RuntimeError: Crime world state generation failed` | Try again — LLM sometimes outputs malformed JSON; the retry loop handles it |
-| Story feels repetitive | Increase `TARGET_PLOT_POINTS` in `config.py` or switch to `GEMINI_PRO` |
-| Phase 2 stalls at step N | The consistency checker is being very strict; check `MAX_REGEN_ATTEMPTS` in `config.py` |
-
----
-
 ## Example Output Structure
 
 ```
