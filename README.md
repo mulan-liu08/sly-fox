@@ -55,12 +55,6 @@ Commands are not menu-based. Short, natural-language commands work best.
 google-genai>=0.8.0
 ```
 
-Optional for tests:
-
-```text
-pytest
-```
-
 ---
 
 ## API key setup
@@ -105,12 +99,6 @@ source .venv/bin/activate      # macOS/Linux
 # .venv\Scripts\activate       # Windows PowerShell/CMD
 
 pip install -r requirements.txt
-```
-
-For running the test suite:
-
-```bash
-pip install pytest
 ```
 
 ---
