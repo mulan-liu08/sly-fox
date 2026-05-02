@@ -1,0 +1,159 @@
+{
+  "setting": {
+    "location": "Blackwood Manor, secluded countryside estate",
+    "date": "October 26th, 1932",
+    "time_of_crime": "Approximately 10:30 PM - 11:00 PM"
+  },
+  "victim": {
+    "name": "Lord Alistair Finch",
+    "occupation": "Wealthy Industrialist and Collector",
+    "background": "Known for his ruthless business tactics, vast fortune, and extensive collection of rare artifacts. He was a man who made many enemies but also held considerable power."
+  },
+  "culprit": {
+    "name": "Eleanor Vance",
+    "means": "Access to the manor and its contents, including a heavy antique letter opener from Lord Finch's study. Knowledge of Finch's habits and a sedative.",
+    "motive": "Lord Finch was blackmailing her family, threatening to expose a devastating scandal that would ruin them financially and socially.",
+    "opportunity": "She was scheduled to work late in her private office, giving her a plausible reason to be in the manor after others had retired or were occupied. She had a window of opportunity when the other suspects were together in the drawing-room.",
+    "method": "Administered a sedative to Lord Finch in his brandy, then bludgeoned him with an antique letter opener during a confrontation, staging the scene to appear as a struggle or robbery gone wrong.",
+    "alibi": "I was in my private office, finalizing Lord Finch's correspondence and preparing documents for tomorrow's meeting. I heard a faint thud from the study around 10:45 PM but assumed it was the old house settling or the wind. I didn't leave my office until midnight."
+  },
+  "suspects": [
+    {
+      "name": "Dr. Elias Thorne",
+      "occupation": "Lord Finch's Personal Physician",
+      "relationship_to_victim": "Long-time acquaintance and professional confidant. He was often at the manor for Finch's various ailments.",
+      "means": "Yes, as a physician, he has knowledge of various substances and access to medical tools. He is also physically capable.",
+      "motive": null,
+      "opportunity": null,
+      "alibi": "I was playing bridge with Lady Finch and Mr. Davies in the drawing-room from 9:00 PM until well past midnight. We never left each other's company, save for Lady Finch's brief trip to the powder room.",
+      "personality": "Calm, analytical, and somewhat detached. He appears to be genuinely concerned about the victim's health, even if he found Finch's personality challenging.",
+      "missing_element": "motive"
+    },
+    {
+      "name": "Lady Beatrice Finch",
+      "occupation": "Socialite",
+      "relationship_to_victim": "Lord Finch's estranged wife. Their marriage was one of convenience, and they lived largely separate lives within the manor.",
+      "means": "Yes, she has full access to the manor and its contents. She is capable of using a blunt object.",
+      "motive": "Yes, she stood to inherit a significant portion of Lord Finch's estate, and their marriage was deeply unhappy. However, she had been planning a divorce, not murder.",
+      "opportunity": null,
+      "alibi": "I was in the drawing-room playing cards with Dr. Thorne and Arthur Davies all evening. I only left to use the powder room once, briefly, around 9:45 PM, and was back within minutes.",
+      "personality": "Elegant, reserved, and appears fragile, but possesses a sharp wit and a strong will. She often seemed weary of her husband's antics.",
+      "missing_element": "opportunity"
+    },
+    {
+      "name": "Arthur Davies",
+      "occupation": "Unemployed Gentleman",
+      "relationship_to_victim": "Lord Finch's nephew and heir apparent. He was financially dependent on his uncle's generosity.",
+      "means": "Yes, he is young and strong, with full access to the manor. He could easily overpower someone.",
+      "motive": "Yes, he was deeply in debt from gambling and Lord Finch had recently threatened to disinherit him if he didn't get his affairs in order. He desperately needed his uncle's money.",
+      "opportunity": null,
+      "alibi": "I was with Aunt Beatrice and Dr. Thorne in the drawing-room, playing bridge. We were together the entire evening, from 9 PM until the butler discovered the body. I never left their sight.",
+      "personality": "Nervous, somewhat entitled, and prone to gambling. He often seemed anxious and easily flustered, especially when discussing finances.",
+      "missing_element": "opportunity"
+    }
+  ],
+  "clues": [
+    {
+      "id": "clue_01",
+      "description": "A small, silver-plated button, intricately engraved with a 'V', found partially hidden under Lord Finch's desk. It appears to have been torn off a garment.",
+      "location": "Lord Finch's Study, under the desk",
+      "points_to": "culprit",
+      "is_red_herring": false,
+      "red_herring_explanation": null,
+      "prerequisite_clue_id": null
+    },
+    {
+      "id": "clue_02",
+      "description": "A crumpled IOU for a significant sum, signed by 'A. Davies', found in the wastebasket of Lord Finch's study. It's dated a week prior to the murder.",
+      "location": "Lord Finch's Study, wastebasket",
+      "points_to": "Arthur Davies",
+      "is_red_herring": true,
+      "red_herring_explanation": "Arthur Davies had indeed accumulated gambling debts, and Lord Finch was threatening to disinherit him. The IOU was from an earlier confrontation, but Arthur had no opportunity to commit the murder, as his alibi is verifiable.",
+      "prerequisite_clue_id": null
+    },
+    {
+      "id": "clue_03",
+      "description": "A faint, distinctive scent of 'Midnight Bloom' perfume lingers near the study door and down the adjacent hallway. This particular scent is known to be worn exclusively by Eleanor Vance.",
+      "location": "Hallway outside Lord Finch's Study",
+      "points_to": "culprit",
+      "is_red_herring": false,
+      "red_herring_explanation": null,
+      "prerequisite_clue_id": null
+    },
+    {
+      "id": "clue_04",
+      "description": "A small, hidden compartment in Eleanor Vance's office desk contains a blood-stained handkerchief and a small, empty vial labeled 'Sedative'. The handkerchief matches the fabric of her uniform.",
+      "location": "Eleanor Vance's Private Office, hidden desk compartment",
+      "points_to": "culprit",
+      "is_red_herring": false,
+      "red_herring_explanation": null,
+      "prerequisite_clue_id": "clue_03"
+    },
+    {
+      "id": "clue_05",
+      "description": "A medical journal in Dr. Thorne's bag, left on a side table in the drawing-room, is open to a page detailing the effects of certain fast-acting poisons, specifically those that mimic heart attacks.",
+      "location": "Dr. Thorne's Medical Bag (in the Drawing Room)",
+      "points_to": "Dr. Elias Thorne",
+      "is_red_herring": true,
+      "red_herring_explanation": "Dr. Thorne was researching a rare condition for another patient and had merely left his journal open. He had no motive to harm Lord Finch and a solid, verifiable alibi.",
+      "prerequisite_clue_id": null
+    },
+    {
+      "id": "clue_06",
+      "description": "An empty space on the display rack in Lord Finch's study where a heavy, ornate antique letter opener, known to be a family heirloom, should be. The rack shows signs of a recent disturbance.",
+      "location": "Lord Finch's Study, display rack",
+      "points_to": "culprit",
+      "is_red_herring": false,
+      "red_herring_explanation": null,
+      "prerequisite_clue_id": "clue_01"
+    }
+  ],
+  "timeline": [
+    {
+      "time": "9:00 PM",
+      "event": "Lord Finch retires to his study for the evening, requesting a final brandy.",
+      "known_to_detective": true
+    },
+    {
+      "time": "9:00 PM",
+      "event": "Dr. Thorne, Lady Finch, and Arthur Davies begin a game of bridge in the drawing-room.",
+      "known_to_detective": true
+    },
+    {
+      "time": "9:30 PM",
+      "event": "Eleanor Vance enters Lord Finch's study under the pretense of delivering final correspondence and slips a sedative into his brandy.",
+      "known_to_detective": false
+    },
+    {
+      "time": "10:00 PM",
+      "event": "Lord Finch begins to feel the effects of the sedative, becoming disoriented but also enraged when Eleanor reveals her true intentions.",
+      "known_to_detective": false
+    },
+    {
+      "time": "10:30 PM",
+      "event": "During a struggle, Eleanor Vance bludgeons Lord Finch with an antique letter opener from his desk.",
+      "known_to_detective": false
+    },
+    {
+      "time": "10:45 PM",
+      "event": "Eleanor Vance stages the scene to look like a struggle or robbery, wipes down the letter opener, and takes it with her.",
+      "known_to_detective": false
+    },
+    {
+      "time": "11:00 PM",
+      "event": "Eleanor Vance returns to her private office, disposes of the bloodied handkerchief and sedative vial in a hidden compartment.",
+      "known_to_detective": false
+    },
+    {
+      "time": "11:30 PM",
+      "event": "The butler, Mr. Henderson, discovers Lord Finch's body in the study.",
+      "known_to_detective": true
+    },
+    {
+      "time": "12:00 AM",
+      "event": "Eleanor Vance leaves her office, goes to her quarters, maintaining her alibi of working late.",
+      "known_to_detective": true
+    }
+  ],
+  "hidden_backstory": "Lord Alistair Finch had been systematically blackmailing Eleanor Vance's family for years, threatening to expose a past scandal that would ruin them financially and socially. On the night of the murder, Eleanor, driven to desperation, confronted Finch in his study. She had planned to incapacitate him with a sedative slipped into his brandy and steal the incriminating documents, but Finch, even after taking the sedative, became enraged when she revealed her intentions. In the ensuing struggle, Eleanor grabbed a heavy antique letter opener from his desk and struck him repeatedly. She then quickly staged the scene to look like a robbery gone wrong, wiping down the weapon and hiding it, before returning to her office to dispose of the bloodied handkerchief and the empty sedative vial. Her alibi of working late was a convenient cover for her actions."
+}
