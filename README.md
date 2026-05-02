@@ -1,7 +1,6 @@
 # Sly Fox — Interactive Mystery
 
-**Team name:** Sly Fox  
-**System name:** Sly Fox — Interactive Mystery  
+**Team name:** Sly Fox   
 **Project template:** Intervention and Accommodation
 
 Sly Fox is a Python text-adventure murder mystery game. The player takes the role of **Detective Morgan Reyes**, explores a generated crime scene, collects evidence, interviews suspects, and eventually accuses the culprit. The system uses a Phase I crime-story generator to produce the hidden murder-mystery state, then turns that state into a playable text game with rooms, objects, NPCs, plot points, causal links, and a drama manager.
