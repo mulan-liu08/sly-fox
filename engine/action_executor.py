@@ -14,6 +14,8 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any
 
+import re
+
 from world.game_state import (
     GameState, ActionCategory, PlotPointStatus, NPCStatus, ClueStatus
 )
@@ -515,54 +517,100 @@ def _clue_by_id(clue_id: str, gs: GameState) -> dict | None:
 
 
 def _clue_implication_reason(clue: dict, gs: GameState) -> str:
-    """Explain why a clue seems connected to a suspect without hardcoded case details."""
+    """
+    Explain why a clue is associated with a specific suspect.
+    Uses the suspect's actual crime-state profile rather than keyword guessing.
+    """
     points = clue.get("points_to")
-    desc = str(clue.get("description", ""))
     if not points or points == "culprit":
         return ""
 
-    low = desc.lower()
-    suspect = next((s for s in gs.crime_state.get("suspects", []) if s.get("name") == points), None)
-    occupation = (suspect or {}).get("occupation", "")
-    relationship = (suspect or {}).get("relationship_to_victim", "")
-    name_tokens = [t for t in re.findall(r"[a-zA-Z]{4,}", str(points).lower())]
-    names_suspect = any(t in low for t in name_tokens)
+    desc = str(clue.get("description", "")).lower()
+    is_red_herring = clue.get("is_red_herring", False)
+    rh_explanation = clue.get("red_herring_explanation", "")
 
-    if names_suspect and any(k in low for k in ("favored", "favourite", "favorite", "known to", "bearing", "name", "monogram", "initial", "prescription", "belong")):
-        reason = f"the clue itself links the object to {points}"
-    elif names_suspect:
-        reason = f"the clue text directly names or associates the object with {points}"
-    elif any(k in low for k in ("favored", "favourite", "favorite", "brand", "monogram", "initial", "personal")):
-        reason = f"the object appears personal or distinctive enough that it could place {points} near the scene"
-    elif occupation:
-        reason = f"the detail plausibly fits {points}'s role as {occupation}"
+    # Find the suspect's crime state data
+    suspect = next(
+        (s for s in gs.crime_state.get("suspects", []) if s.get("name") == points),
+        None
+    )
+    if not suspect:
+        return f"It raises questions about {points}."
+
+    relationship = (suspect.get("relationship_to_victim") or "").strip()
+    occupation   = (suspect.get("occupation") or "").strip()
+    missing      = (suspect.get("missing_element") or "").strip()
+    victim       = _victim_short(gs)
+
+    # Check if the description directly mentions the suspect's name
+    name_tokens = [t for t in re.findall(r"[a-zA-Z]{4,}", points.lower())]
+    names_in_desc = any(t in desc for t in name_tokens)
+
+    if names_in_desc:
+        base = f"The evidence directly names or references {points}"
     elif relationship:
-        reason = f"the clue fits something known about {points}'s relationship to the victim"
+        # Keep relationship short — first sentence only
+        short_rel = relationship.split(".")[0].rstrip(",")
+        base = f"Given {points}'s role ({short_rel}), this object's presence is notable"
+    elif occupation:
+        base = f"This is consistent with {points}'s position as {occupation}"
     else:
-        reason = "the clue fits something known about their access, interests, or relationship to the victim"
-    return f"It raises questions about {points}: {reason}. It is still circumstantial until means, motive, and opportunity line up."
+        base = f"This raises questions about {points}'s presence near the scene"
+
+    if is_red_herring:
+        return (f"{base}, though further investigation will show this is circumstantial. "
+                f"What appears to implicate them has an innocent explanation.")
+    else:
+        missing_note = ""
+        if missing == "means":
+            missing_note = f" You still need to establish how {points} could have committed the crime."
+        elif missing == "opportunity":
+            missing_note = f" You still need to place {points} at the scene during the critical window."
+        elif missing == "motive":
+            missing_note = f" You still need a concrete reason why {points} would want {victim} dead."
+        return f"{base}.{missing_note}"
 
 
 def _culprit_clue_reason(clue: dict, gs: GameState) -> str:
-    """Explain culprit-pointing evidence in concrete but generated-case terms."""
-    culprit = gs.crime_state.get("culprit", {}).get("name", "the culprit")
-    clue_name = _evidence_name(clue.get("id", ""), gs).lower()
-    text = (clue.get("description", "") + " " + clue_name).lower()
-    means = gs.crime_state.get("culprit", {}).get("means", "")
-    motive = gs.crime_state.get("culprit", {}).get("motive", "")
-    method = gs.crime_state.get("culprit", {}).get("method", "")
-    opportunity = gs.crime_state.get("culprit", {}).get("opportunity", "")
+    """
+    Explain culprit-pointing evidence using the actual crime state facts.
+    Avoids heuristic keyword guessing — instead maps the clue description
+    against what the crime state says about means, method, and opportunity.
+    """
+    culprit_data = gs.crime_state.get("culprit", {})
+    culprit = culprit_data.get("name", "the culprit")
     victim = _victim_short(gs)
+    desc = clue.get("description", "").lower()
 
-    if _looks_like_motive(text):
-        return f"This gives you a motive thread. It connects {victim}'s death to {culprit}'s possible reason for wanting the victim silenced."
-    if _looks_like_weapon(text) or _overlaps(text, means):
-        return f"This looks like the means: physical evidence that could explain how the murder was carried out, and it connects to {culprit}'s access or possessions."
-    if _looks_like_body_or_method(text) or _overlaps(text, method):
-        return f"This clarifies the method of death and gives you a concrete way to test {culprit}'s means and alibi."
-    if _overlaps(text, opportunity):
-        return f"This affects opportunity: it helps place someone with access near the critical window, making {culprit}'s movements important."
-    return f"This fits the hidden method, motive, or opportunity more cleanly than the circumstantial leads, making {culprit}'s access, alibi, and relationship with {victim} more important."
+    means       = (culprit_data.get("means", "") or "").lower()
+    method      = (culprit_data.get("method", "") or "").lower()
+    opportunity = (culprit_data.get("opportunity", "") or "").lower()
+    motive      = (culprit_data.get("motive", "") or "").lower()
+
+    # Check which dimension of the crime state this clue description overlaps with.
+    # Use word overlap rather than heuristic keyword lists.
+    desc_words  = {w for w in re.findall(r"[a-zA-Z]{4,}", desc)}
+    means_words = {w for w in re.findall(r"[a-zA-Z]{4,}", means)}
+    method_words = {w for w in re.findall(r"[a-zA-Z]{4,}", method)}
+    opp_words   = {w for w in re.findall(r"[a-zA-Z]{4,}", opportunity)}
+    mot_words   = {w for w in re.findall(r"[a-zA-Z]{4,}", motive)}
+
+    if desc_words & method_words:
+        short_method = method[:80].rstrip(",. ") if method else "the murder method"
+        return (f"This connects to how {victim} was killed: it is consistent with "
+                f"{culprit}'s method and warrants closer scrutiny of their access.")
+    if desc_words & means_words:
+        return (f"This connects to the means available to {culprit}: "
+                f"the evidence is consistent with their known access and capabilities.")
+    if desc_words & opp_words:
+        return (f"This bears on opportunity: it helps place {culprit} "
+                f"near the victim during the critical window.")
+    if desc_words & mot_words:
+        return (f"This is relevant to motive: it connects to why {culprit} "
+                f"may have wanted {victim} dead.")
+    # Fallback: no strong overlap — state neutrally that this warrants investigation
+    return (f"This physical evidence warrants attention: it has not been "
+            f"fully accounted for and connects to {culprit}'s profile.")
 
 
 def _culprit_suspect_reason(clue: dict, clue_name: str, culprit_name: str, gs: GameState) -> str:
@@ -651,7 +699,6 @@ def _suspect_scores(gs: GameState) -> tuple[dict[str, int], dict[str, list[str]]
         # such as "machined", and do not let culprit clues accidentally implicate
         # unrelated suspects through tool/occupation words.
         if points != "culprit":
-            import re
             desc = (clue.get("description", "") + " " + clue_name).lower()
             for npc in gs.npcs.values():
                 name_tokens = [p.lower().strip(".'\"") for p in npc.name.replace('"', '').split()]
@@ -773,7 +820,6 @@ def _looks_like_body_or_method(text: str) -> bool:
 
 
 def _overlaps(text: str, other: str) -> bool:
-    import re
     tokens = {t for t in re.findall(r"[a-zA-Z]{4,}", text.lower())}
     other_tokens = {t for t in re.findall(r"[a-zA-Z]{4,}", (other or "").lower())}
     return bool(tokens & other_tokens)

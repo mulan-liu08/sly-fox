@@ -518,16 +518,20 @@ def _clue_to_object_name(description: str) -> str:
         text = chunks[0] if chunks else text
 
     words = text.split()
-    stop_verbs = {"is", "are", "was", "were", "sits", "lies", "lying", "rests", "resting", "covers", "bearing", "with"}
+    stop_verbs = {"is", "are", "was", "were", "sits", "lies", "lying", "rests", "resting", "covers", "bearing", "with", "on", "in", "near", "at", "found", "discovered"}
     kept = []
     for w in words:
-        clean = w.strip(".;:").lower()
+        clean = w.strip('.,;:"').lower()
         if kept and clean in stop_verbs:
             break
         kept.append(w.strip(".;:"))
-        if len(kept) >= 6:
+        if len(kept) >= 5:
             break
-    name = " ".join(kept).strip(" ,.;:")
+    name = " ".join(kept).strip(' ,.;:')
+    # Strip trailing possessives like "Lord Finch's" → stop before them
+    name = re.sub(r"\b\w+'s$", "", name).strip(" ,.;:")
+    # Strip trailing prepositions: "on Lord", "in the", etc.
+    name = re.sub(r"\s+(?:on|in|at|near|of|from|by|under|above|beside)\s+\S+$", "", name, flags=re.I).strip(" ,.;:")
 
     # Final guard against useless one-word adjectives.
     if name.lower() in bad_single or len(name) < 3:

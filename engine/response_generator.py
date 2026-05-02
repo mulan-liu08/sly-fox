@@ -261,10 +261,15 @@ def _describe_talk(hint: str, execution: ExecutionResult, gs: GameState) -> str:
             safe_facts.append(safe_fact)
 
     if execution.npc_interviewed is None:
-        return (
-            f"You press {npc.name} again. Their story does not substantially change.\n"
-            f"\"{alibi}\""
-        )
+        # Re-interview: short response, no LLM call needed
+        short_aliases = [
+            f"{npc.name} meets your gaze evenly. \"My statement stands as given. I have nothing to add.\"",
+            f"{npc.name} sighs. \"I have already told you everything I know.\"",
+            f"{npc.name} repeats their account without new detail. The story is unchanged.",
+        ]
+        import hashlib
+        idx = int(hashlib.md5(npc.id.encode()).hexdigest(), 16) % len(short_aliases)
+        return short_aliases[idx]
 
     # Try an LLM-written interview for naturalness, but only from already-sanitized
     # public information. If it fails validation, fall back to deterministic text.
@@ -425,9 +430,21 @@ def _first_person_statement(text: str, npc, gs: GameState | None = None) -> str:
     text = re.sub(r"^(?:claims?|claimed|stated|states|says|said)\s+(?:that\s+)?", "", text, flags=re.I).strip()
     text = re.sub(r"^(?:was|were)\b", "I was", text, flags=re.I).strip()
 
-    for old in sorted({name, first, last}, key=len, reverse=True):
-        if old:
-            text = re.sub(r"\b" + re.escape(old) + r"\b", "I", text)
+    # Protect the victim's name tokens from being replaced.
+    # e.g. if suspect last name is "Finch" and victim is "Lord Finch",
+    # we must not replace "Finch" inside "Lord Finch" with "I".
+    victim_name = ""
+    if gs:
+        victim_name = str(gs.crime_state.get("victim", {}).get("name", "") or "").strip()
+    victim_tokens = set(re.findall(r"[A-Za-z]+", victim_name))
+
+    for token in sorted({name, first, last}, key=len, reverse=True):
+        if not token:
+            continue
+        # Skip if this token appears in the victim's name (prevents "Lord I's nephew")
+        if token in victim_tokens and token != name:
+            continue
+        text = re.sub(r"\b" + re.escape(token) + r"\b", "I", text)
 
     # Convert only likely references to the speaker. This is imperfect, so we
     # repair common object/possessive mistakes afterward.
@@ -524,7 +541,11 @@ def _safe_relationship_summary(raw: str, npc, gs: GameState) -> str:
     if any(k in low for k in ("blackmail", "fraud", "affair", "secret", "scandal", "threat", "inheritance", "debt", "stole", "ruin", "resourceful", "resourcefulness", "wrong end", "rival")):
         return f"{victim} and I had a strained history. Some of it is private, but I am not hiding a murder."
     fp = _first_person_statement(text, npc, gs).rstrip(".")
-    return f"{victim} and I knew each other through this: {fp}."
+    # Avoid the awkward "knew each other through this:" phrasing.
+    # Just return the first-person relationship statement directly.
+    if fp.lower().startswith("i ") or fp.lower().startswith("my "):
+        return fp + "."
+    return f"My connection to {victim}: {fp}."
 
 
 def _verification_guidance(npc, gs: GameState) -> str:
@@ -697,87 +718,91 @@ def _wrong_accusation_weak_point(npc, missing: str, gs: GameState) -> str:
 
 
 def _culprit_clue_reason(clue: dict, gs: GameState) -> str:
-    """Explain culprit-pointing evidence using the generated case details."""
+    """
+    Explain culprit-pointing evidence using actual crime state facts.
+    Grounded in what the crime state says about method, means, and opportunity —
+    no heuristic keyword matching that produces wrong conclusions.
+    """
     culprit_info = gs.crime_state.get("culprit", {}) or {}
     culprit = culprit_info.get("name", "the strongest suspect")
     victim = _victim_short(gs)
-    obj = next((o for o in gs.objects.values() if o.clue_id == clue.get("id")), None)
-    clue_name = obj.name if obj else ""
-    desc = str(clue.get("description", ""))
-    text = f"{clue_name} {desc}".lower()
-    means = str(culprit_info.get("means", ""))
-    motive = str(culprit_info.get("motive", ""))
-    method = str(culprit_info.get("method", ""))
-    opportunity = str(culprit_info.get("opportunity", ""))
+    desc = str(clue.get("description", "")).lower()
 
-    culprit_bits = {w for w in re.findall(r"[a-zA-Z]{4,}", str(culprit).lower())}
-    if culprit_bits and culprit_bits & _token_words(desc):
-        if _looks_like_weapon(text):
-            return (
-                f"This is more than a general clue about the method. It is tied directly to {culprit} "
-                f"by the place, name, or possession described in the evidence, making their means and access central."
-            )
-        return f"This evidence names or directly connects to {culprit}, so it belongs high on the case board."
+    method      = (culprit_info.get("method", "") or "").lower()
+    means       = (culprit_info.get("means", "") or "").lower()
+    opportunity = (culprit_info.get("opportunity", "") or "").lower()
+    motive      = (culprit_info.get("motive", "") or "").lower()
 
-    if _looks_like_motive(text) or _overlaps(text, motive):
-        return (
-            f"This gives you a motive thread. It connects {victim}'s death to a reason {culprit} "
-            "may have wanted the victim silenced or removed."
-        )
-    if _looks_like_weapon(text) or _overlaps(text, means):
-        return (
-            f"This looks like the means: physical evidence that could explain how the murder was carried out. "
-            f"Compare it against {culprit}'s access, possessions, and alibi."
-        )
-    if _looks_like_body_or_method(text) or _overlaps(text, method):
-        return (
-            f"This clarifies the method of death. It gives you a concrete way to test who could have reached "
-            f"{victim}, used that method, and left the scene."
-        )
-    if _overlaps(text, opportunity):
-        return f"This affects opportunity: it makes {culprit}'s movements during the critical window more important."
-    return (
-        f"This fits the central means, motive, or opportunity chain better than the circumstantial leads, "
-        f"so {culprit}'s access, alibi, and relationship with {victim} deserve scrutiny."
-    )
+    desc_words  = {w for w in re.findall(r"[a-zA-Z]{4,}", desc)}
+    method_words = {w for w in re.findall(r"[a-zA-Z]{4,}", method)}
+    means_words = {w for w in re.findall(r"[a-zA-Z]{4,}", means)}
+    opp_words   = {w for w in re.findall(r"[a-zA-Z]{4,}", opportunity)}
+    mot_words   = {w for w in re.findall(r"[a-zA-Z]{4,}", motive)}
+
+    if desc_words & method_words:
+        return (f"This connects to how {victim} died. It is consistent with "
+                f"{culprit}'s method and is worth comparing against their alibi.")
+    if desc_words & means_words:
+        return (f"This connects to the means available to {culprit}: "
+                f"it is consistent with their known access and capabilities.")
+    if desc_words & opp_words:
+        return (f"This bears on opportunity — it helps establish who had access "
+                f"to the victim during the critical window.")
+    if desc_words & mot_words:
+        return (f"This is relevant to motive: it connects to why {culprit} "
+                f"may have wanted {victim} dead.")
+    return (f"This evidence has not been fully explained and is consistent with "
+            f"{culprit}'s profile. Compare it against their alibi.")
 
 def _clue_implication_reason(clue: dict, gs: GameState) -> str:
-    """Explain why a circumstantial clue raises questions about a suspect.
-
-    Prefer the concrete wording of the clue itself over generic occupation-based
-    reasoning. This makes clues like a favored cigar brand or a named
-    prescription pad intelligible to the player.
+    """
+    Explain why a clue raises questions about a specific suspect.
+    Grounded in the suspect's crime state profile, not keyword heuristics.
     """
     points_to = clue.get("points_to")
-    desc = str(clue.get("description", ""))
     if not points_to or points_to == "culprit":
         return ""
 
-    low = desc.lower()
-    suspect = next((s for s in gs.crime_state.get("suspects", []) if s.get("name") == points_to), None)
-    occupation = (suspect or {}).get("occupation", "")
-    relationship = (suspect or {}).get("relationship_to_victim", "")
+    desc = str(clue.get("description", "")).lower()
+    is_red_herring = clue.get("is_red_herring", False)
+    victim = _victim_short(gs)
 
-    name_tokens = [t for t in re.findall(r"[a-zA-Z]{4,}", str(points_to).lower())]
-    names_suspect = any(t in low for t in name_tokens)
-
-    if names_suspect and any(k in low for k in ("favored", "favourite", "favorite", "known to", "bearing", "name", "monogram", "initial", "prescription", "belong")):
-        reason = f"the clue itself links the object to {points_to}."
-    elif names_suspect:
-        reason = f"the clue text directly names or associates the object with {points_to}."
-    elif any(k in low for k in ("favored", "favourite", "favorite", "brand", "monogram", "initial", "personal")):
-        reason = f"the object appears personal or distinctive enough that it could place {points_to} near the scene."
-    elif occupation:
-        reason = f"the detail plausibly fits {points_to}'s role as {occupation}."
-    elif relationship:
-        reason = f"the clue fits something known about {points_to}'s relationship to the victim."
-    else:
-        reason = f"the clue fits something known about {points_to}'s access, interests, or relationship to the victim."
-
-    return (
-        f"At first glance, it raises questions about {points_to}: {reason} "
-        "It still does not prove guilt by itself; you need means, motive, and opportunity to line up."
+    suspect = next(
+        (s for s in gs.crime_state.get("suspects", []) if s.get("name") == points_to),
+        None
     )
+    if not suspect:
+        return f"At first glance, it raises questions about {points_to}."
+
+    relationship = (suspect.get("relationship_to_victim") or "").split(".")[0].strip()
+    occupation   = (suspect.get("occupation") or "").strip()
+    missing      = (suspect.get("missing_element") or "").strip()
+
+    name_tokens  = [t for t in re.findall(r"[a-zA-Z]{4,}", points_to.lower())]
+    names_in_desc = any(t in desc for t in name_tokens)
+
+    if names_in_desc:
+        base = f"The evidence directly names or references {points_to}"
+    elif relationship:
+        base = f"Given {points_to}'s relationship to {victim} ({relationship}), this is worth examining"
+    elif occupation:
+        base = f"This is consistent with {points_to}'s access as {occupation}"
+    else:
+        base = f"This raises questions about {points_to}'s presence near the scene"
+
+    if is_red_herring:
+        return (f"At first glance, {base.lower()}, though further investigation will show "
+                f"there is an innocent explanation.")
+    else:
+        if missing == "means":
+            suffix = f" You still need to establish how {points_to} could have committed the crime."
+        elif missing == "opportunity":
+            suffix = f" You still need to place {points_to} at the scene during the critical window."
+        elif missing == "motive":
+            suffix = f" You still need a concrete reason why {points_to} would want {victim} dead."
+        else:
+            suffix = " It is still circumstantial until means, motive, and opportunity line up."
+        return f"{base}. {suffix.strip()}"
 
 
 def _wrong_accusation_feedback(name: str, gs: GameState) -> str:

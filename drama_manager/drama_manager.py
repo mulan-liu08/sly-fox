@@ -322,9 +322,17 @@ class DramaManager:
     # ── Proactive intervention ────────────────────────────────────────────────
 
     def _give_hint(self) -> DMDecision:
-        """Player is stuck — give direct but in-world guidance."""
+        """Player is stuck — give a subtle in-world atmospheric nudge, not explicit navigation."""
         self.gs.consecutive_non_constituent = 0
-        hint = _next_step_hint(self.gs)
+        # Use _generate_hint for an atmospheric, non-spoilery nudge.
+        # _next_step_hint gives explicit "go north, go east" instructions which
+        # go stale as the player moves and break immersion.
+        available_pps = self.gs.get_available_plot_points()
+        if available_pps:
+            pp = available_pps[0]
+            hint = self._generate_hint(pp.description, pp.location_hint)
+        else:
+            hint = "A quiet instinct tells you there is still more to uncover here."
         entry = f"DM HINT: {hint[:80]}"
         self._log(entry)
         self.gs.active_hints.append(hint)

@@ -1,0 +1,144 @@
+{
+  "setting": {
+    "location": "Blackwood Manor, a secluded estate in the English countryside",
+    "date": "October 26, 1932",
+    "time_of_crime": "Approximately 10:30 PM"
+  },
+  "victim": {
+    "name": "Lord Alistair Finch",
+    "occupation": "Wealthy Industrialist and Collector",
+    "background": "Known for his ruthless business dealings, often acquiring his vast collection of rare artifacts through morally ambiguous means. He was a demanding and often cruel employer and husband."
+  },
+  "culprit": {
+    "name": "Eleanor Vance",
+    "means": "A small vial of fast-acting, odorless Belladonna extract, which she had acquired through her research into historical poisons for the manor's library archives.",
+    "motive": "Revenge for Lord Finch's role in orchestrating the financial ruin of her family's publishing house years ago, which led directly to her father's suicide. She also stood to inherit a modest sum as a distant relative, though revenge was her primary driver.",
+    "opportunity": "As the manor's librarian, she had legitimate access to Lord Finch's study. During a brief, manor-wide power flicker, she slipped into the study and poisoned his brandy unnoticed.",
+    "method": "Poisoned Lord Finch's brandy with Belladonna extract.",
+    "alibi": "Claimed she was in the library organizing a newly arrived collection of rare medieval manuscripts, a task that would keep her isolated and away from the main drawing-room during the time of the murder."
+  },
+  "suspects": [
+    {
+      "name": "Dr. Elias Thorne",
+      "occupation": "Lord Finch's Personal Physician",
+      "relationship_to_victim": "Long-time confidant and medical advisor, though often at odds with Finch's demanding nature.",
+      "means": "Medical knowledge and access to various pharmaceuticals, but no known access to the specific poison used. He carries a strong sedative, but it is not lethal in the quantities found.",
+      "motive": "Lord Finch was threatening to cut off his funding for a critical medical research project, which would ruin Dr. Thorne's career and reputation.",
+      "opportunity": null,
+      "alibi": "Was playing cards with Lady Beatrice and Mr. Davies in the drawing-room from 9:30 PM until the discovery of the body. He never left their sight.",
+      "personality": "Reserved, intellectual, and slightly nervous, always meticulously professional.",
+      "missing_element": "opportunity"
+    },
+    {
+      "name": "Lady Beatrice Finch",
+      "occupation": "Lord Finch's Estranged Wife",
+      "relationship_to_victim": "Married to the victim, but lived a largely separate life within the manor due to his emotional abuse and infidelity.",
+      "means": null,
+      "motive": "Stood to inherit a vast fortune upon Lord Finch's death, and had endured years of emotional abuse and public humiliation at his hands.",
+      "opportunity": null,
+      "alibi": "Was playing cards with Dr. Thorne and Mr. Davies in the drawing-room from 9:30 PM until the discovery of the body. She is physically frail and was under constant observation.",
+      "personality": "Elegant, stoic, and outwardly composed, but with a deep-seated sadness and resentment towards her husband.",
+      "missing_element": "means"
+    },
+    {
+      "name": "Arthur Davies",
+      "occupation": "Lord Finch's Head Butler",
+      "relationship_to_victim": "Loyal, long-serving employee of the Finch family for over thirty years.",
+      "means": "Access to all areas of the manor and its contents, but no known access to lethal poisons or the specific means to administer them discreetly.",
+      "motive": null,
+      "opportunity": "Was serving refreshments in the drawing-room and then preparing for the guests' departure, moving between the drawing-room and the kitchen.",
+      "alibi": "Was serving refreshments in the drawing-room, then in the kitchen preparing for the guests' departure, and was the one who discovered Lord Finch's body. His movements were largely observed by guests.",
+      "personality": "Impeccable, professional, and seemingly unflappable, with an almost encyclopedic knowledge of the manor's routines.",
+      "missing_element": "motive"
+    }
+  ],
+  "clues": [
+    {
+      "id": "clue_01",
+      "description": "A small, ornate silver locket, slightly tarnished, found partially hidden under Lord Finch's study desk. Inside, it contains a faded photograph of a young girl and a tiny, almost illegible inscription: 'E.V.'",
+      "location": "Lord Finch's Study, under the desk.",
+      "points_to": "culprit",
+      "is_red_herring": false,
+      "red_herring_explanation": null,
+      "prerequisite_clue_id": null
+    },
+    {
+      "id": "clue_02",
+      "description": "A half-empty bottle of Chloral Hydrate, a potent sedative, found in Dr. Thorne's medical bag, along with a syringe.",
+      "location": "Dr. Thorne's Guest Room, in his medical bag.",
+      "points_to": "Dr. Elias Thorne",
+      "is_red_herring": true,
+      "red_herring_explanation": "Dr. Thorne uses the sedative for his own severe insomnia, a condition exacerbated by his stressful work for Lord Finch. While potent, it is not the poison used and would not cause the specific symptoms observed.",
+      "prerequisite_clue_id": null
+    },
+    {
+      "id": "clue_03",
+      "description": "A faint, sweet almond-like scent lingering on a discarded, embroidered handkerchief found near the study's back entrance. This scent is characteristic of Belladonna.",
+      "location": "Manor's Back Corridor, near the study entrance.",
+      "points_to": "culprit",
+      "is_red_herring": false,
+      "red_herring_explanation": null,
+      "prerequisite_clue_id": "clue_01"
+    },
+    {
+      "id": "clue_04",
+      "description": "A heavily annotated copy of Lord Byron's 'Manfred' in Lady Beatrice's private sitting room, with several passages about revenge, suffering, and freedom from tyranny underlined and marginalia expressing strong agreement.",
+      "location": "Lady Beatrice's Private Sitting Room, on her bedside table.",
+      "points_to": "Lady Beatrice Finch",
+      "is_red_herring": true,
+      "red_herring_explanation": "Lady Beatrice is a romantic and identifies deeply with the themes of suffering and rebellion in literature, reflecting her personal unhappiness and resentment towards Lord Finch, but not indicating a direct plan for murder.",
+      "prerequisite_clue_id": null
+    },
+    {
+      "id": "clue_05",
+      "description": "A small, almost imperceptible scratch on the antique crystal brandy decanter in Lord Finch's study, consistent with a small, sharp object being used to pry open a tightly fitted stopper or tamper with the contents.",
+      "location": "Lord Finch's Study, on the brandy decanter.",
+      "points_to": "culprit",
+      "is_red_herring": false,
+      "red_herring_explanation": null,
+      "prerequisite_clue_id": null
+    },
+    {
+      "id": "clue_06",
+      "description": "A hidden compartment in Eleanor Vance's desk in the library, containing a small, empty glass vial with residue that, when tested, matches the almond scent from the handkerchief.",
+      "location": "Library, Eleanor Vance's Desk.",
+      "points_to": "culprit",
+      "is_red_herring": false,
+      "red_herring_explanation": null,
+      "prerequisite_clue_id": "clue_03"
+    }
+  ],
+  "timeline": [
+    {
+      "time": "8:00 PM",
+      "event": "Dinner served in the dining hall for Lord Finch and his guests.",
+      "known_to_detective": true
+    },
+    {
+      "time": "9:30 PM",
+      "event": "Guests retire to the drawing-room for drinks and cards. Lord Finch excuses himself to his study.",
+      "known_to_detective": true
+    },
+    {
+      "time": "10:20 PM",
+      "event": "A brief, manor-wide power flicker occurs, plunging the estate into momentary darkness.",
+      "known_to_detective": true
+    },
+    {
+      "time": "10:25 PM",
+      "event": "Eleanor Vance, using the power flicker as cover, slips into Lord Finch's study and poisons his brandy.",
+      "known_to_detective": false
+    },
+    {
+      "time": "10:30 PM",
+      "event": "Lord Finch takes a sip of his brandy, collapses, and dies shortly after.",
+      "known_to_detective": true
+    },
+    {
+      "time": "10:45 PM",
+      "event": "Arthur Davies enters the study to check on Lord Finch and discovers his body.",
+      "known_to_detective": true
+    }
+  ],
+  "hidden_backstory": "Eleanor Vance harbored a deep-seated vendetta against Lord Alistair Finch. Years ago, Finch's ruthless business tactics had deliberately ruined her family's esteemed publishing house, driving her father to despair and ultimately suicide. Eleanor, then a young girl, vowed revenge. She meticulously planned her infiltration into Blackwood Manor as the librarian, patiently waiting for her opportunity. On the night of the murder, she seized the moment during a brief power flicker, knowing it would provide the perfect cover. Slipping into Finch's study, she quickly administered a potent Belladonna extract into his brandy, a poison she had researched extensively. She then returned to the library, feigning work on new acquisitions, confident her alibi would hold, unaware she had left a trail of subtle clues."
+}

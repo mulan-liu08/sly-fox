@@ -209,7 +209,10 @@ def run_game(gs: GameState, debug: bool = False) -> list[dict]:
                      if o.clue_id == result.clue_discovered),
                     None
                 )
-                evidence_name = obj.name if obj else result.clue_discovered
+                # Clean truncated names: strip trailing possessives/prepositions
+                import re as _re
+                raw_name = obj.name if obj else result.clue_discovered
+                evidence_name = _re.sub(r"\s+(?:on|in|at|of|from)\s+\S+['\'s]*$", "", raw_name, flags=_re.I).strip(" ,.;:'")
                 print()
                 print(f"  📋 EVIDENCE LOGGED: {evidence_name}")
                 print(_wrap(clue["description"], indent="     "))

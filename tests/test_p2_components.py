@@ -201,12 +201,13 @@ def test_accuse_too_early():
 
 def test_accuse_correct():
     gs = _make_game_state()
-    # Give player enough clues
+    # Give player enough clues AND interview the culprit first (required by game logic)
     gs.player.discovered_clues = ["clue_01", "clue_03", "clue_extra"]
     gs.player.location = "corridor"   # Dr. Reed is in corridor
+    gs.player.interviewed_npcs.append("dr_reed")  # must interview before accusing
     action = _make_action("accuse", "reed", ActionCategory.CONSTITUENT, "reveal_culprit")
     result = execute_action(action, gs)
-    assert result.success
+    assert result.success, f"Expected success but got: {result.narrative_hint}"
     assert result.game_won
     print("  PASS: correct accusation wins the game")
 
