@@ -45,7 +45,7 @@ Commands are not menu-based. Short, natural-language commands work best.
 ---
 
 ## Walkthrough Guide
-An entire walkthrough of the interactive game from start to end is in the `walkthrough.txt` file. 
+An entire walkthrough of the interactive game from start to end is in the `walkthrough.txt` file. Below are highlighted points of the walkthrough that point out user actions and DM's responses and possible intervention.
 
 *Note: the transcript of the original walkthrough shown in the demo video was lost, so the walkthrough here does not match the one in the demo video exactly. However, all required elements (e.g., DM intervention) are still present in this walkthrough and much of the story remains the same.*
 
