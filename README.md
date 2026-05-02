@@ -251,34 +251,7 @@ Use short commands and the deterministic commands listed above when possible.
 
 ## Project architecture
 
-```text
-                    +----------------------+
-                    |      game.py         |
-                    | CLI + main game loop |
-                    +----------+-----------+
-                               |
-                               v
-+-------------------+   +----------------------+   +----------------------+
-| phase1_generator.py|  | world/world_generator.py | | world/game_state.py  |
-| Crime-state JSON   |->| Rooms, NPCs, objects, |->| Dataclasses + global |
-| generation         |  | plot points, links    |  | mutable game state   |
-+-------------------+   +----------------------+   +----------+-----------+
-                                                              |
-                                                              v
-+----------------------+   +----------------------+   +----------------------+
-| engine/action_       |   | engine/action_       |   | drama_manager/       |
-| interpreter.py       |-->| executor.py          |-->| drama_manager.py     |
-| Command parsing +    |   | Applies actions to   |   | Detects exceptions, |
-| classification       |   | GameState            |   | hints, accommodation|
-+----------------------+   +----------+-----------+   +----------+-----------+
-                                      |                          |
-                                      v                          v
-                              +----------------------+   +----------------------+
-                              | engine/response_    |   | llm_client.py        |
-                              | generator.py        |   | Gemini wrapper +    |
-                              | Player-facing text  |   | JSON extraction     |
-                              +----------------------+   +----------------------+
-```
+![alt text](https://github.com/mulan-liu08/sly-fox/blob/main/phase_2_architecture_diagram.png "architecture diagram")
 
 ### Main files
 
@@ -295,3 +268,13 @@ Use short commands and the deterministic commands listed above when possible.
 | `engine/response_generator.py` | Converts execution results and DM decisions into readable second-person game narration. |
 | `drama_manager/drama_manager.py` | Handles intervention and accommodation, including blocking dangerous actions, repairing threatened evidence, giving hints, and causing plot-relevant events. |
 
+### Architecture to Code Mapping
+- Crime Story Generation: `phase1_generator.py` → `generate_crime_world_state()`
+- World Generator: `world/world_generator.py` → `build_game_world()`
+- Game World State: `world/game_state.py` → `GameState`, `Room`, `NPC`, `PlotPoint`, `CausalLink`
+- Action Interpreter (LLM): `engine/action_interpreter.py` → `interpret_action()`
+- Action Classifier: `engine/action_interpreter.py` → `InterpretedAction.category`
+- Drama Manager: `drama_manager/drama_manager.py` → `DramaManager.evaluate()`
+- Accommodation: `drama_manager/drama_manager.py` → `_accommodate()`, `_generate_repair()`
+- Response Generator (LLM): `engine/response_generator.py` → `generate_response()`
+- Main Game Loop: `game.py` → `run_game()`
