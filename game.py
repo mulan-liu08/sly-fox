@@ -1,21 +1,3 @@
-"""
-game.py — Main interactive game loop for Phase 2.
-
-Ties together:
-  WorldGenerator → GameState
-  ActionInterpreter → InterpretedAction
-  DramaManager → DMDecision (pre-execution for EXCEPTIONAL)
-  ActionExecutor → ExecutionResult
-  DramaManager.evaluate() (post-execution for CONSTITUENT/CONSISTENT)
-  ResponseGenerator → player-facing text
-
-Usage:
-  python game.py                                      # generate a new crime state, then play
-  python game.py --theme "mountain observatory"       # generate from a theme, then play
-  python game.py --crime-state output/crime_state.json # load an existing Phase 1 state
-  python game.py --crime-state output/crime_state.json --debug
-"""
-
 from __future__ import annotations
 import argparse
 import json
@@ -31,9 +13,6 @@ from engine.response_generator import generate_response, describe_room
 from drama_manager.drama_manager import DramaManager, DMDecision
 from world.game_state import ActionCategory, GameState
 from config import OUTPUT_DIR
-
-
-# ─── CLI ─────────────────────────────────────────────────────────────────────
 
 def parse_args() -> argparse.Namespace:
     p = argparse.ArgumentParser(description="Sly Fox Interactive Mystery — Phase 2")
@@ -60,8 +39,6 @@ def parse_args() -> argparse.Namespace:
     return p.parse_args()
 
 
-# ─── Game setup ───────────────────────────────────────────────────────────────
-
 def load_crime_state(path: str) -> dict:
     with open(path, "r", encoding="utf-8") as f:
         return json.load(f)
@@ -73,7 +50,7 @@ def print_banner(crime_state: dict) -> None:
     date    = crime_state.get("setting", {}).get("date", "")
     print()
     print("=" * 64)
-    print("  🦊  SLY FOX — INTERACTIVE MYSTERY")
+    print("SLY FOX — INTERACTIVE MYSTERY")
     print(f"  Case: The Murder of {victim}")
     print(f"  Scene: {setting}")
     print(f"  Date: {date}")
@@ -100,7 +77,6 @@ def print_intro(gs: GameState) -> None:
     )
     print(_wrap(intro))
     print()
-    # Describe starting room
     room = gs.rooms.get(gs.player.location)
     if room:
         print(_wrap(describe_room(gs)))
@@ -109,15 +85,12 @@ def print_intro(gs: GameState) -> None:
 
 def _death_description(crime: dict) -> str:
     method = crime.get("culprit", {}).get("method", "unknown causes")
-    # Give the non-spoiler version
     if "toxin" in method.lower() or "poison" in method.lower():
         return "a sudden medical collapse, though something feels off"
     if "hemorrhage" in method.lower():
         return "what appears to be a sudden collapse"
     return "suspicious circumstances"
 
-
-# ─── Main game loop ───────────────────────────────────────────────────────────
 
 def run_game(gs: GameState, debug: bool = False) -> list[dict]:
     dm = DramaManager(gs)
@@ -130,7 +103,6 @@ def run_game(gs: GameState, debug: bool = False) -> list[dict]:
             print(f"  [{gs.summary()}]")
         print()
 
-        # ── Get player input ──────────────────────────────────────────────────
         try:
             raw = input("  > ").strip()
         except (EOFError, KeyboardInterrupt):
@@ -144,12 +116,10 @@ def run_game(gs: GameState, debug: bool = False) -> list[dict]:
             print("  You step away from the investigation.")
             break
 
-        # Soft word limit warning
         if len(raw.split()) > 10:
             print("  (Keep commands to 10 words or fewer for best results.)")
             raw = " ".join(raw.split()[:10])
 
-        # ── Interpret action ──────────────────────────────────────────────────
         print("  ...", end="\r")
         action = interpret_action(raw, gs)
 
@@ -157,7 +127,6 @@ def run_game(gs: GameState, debug: bool = False) -> list[dict]:
             print(f"  [ACTION] verb={action.verb!r} target={action.target!r} "
                   f"category={action.category.value} | {action.reasoning}")
 
-        # ── Drama Manager pre-execution (for EXCEPTIONAL) ─────────────────────
         dm_decision = DMDecision(action="allow", message="", log_entry="")
         if action.category == ActionCategory.EXCEPTIONAL:
             dm_decision = dm.evaluate(action)
@@ -169,17 +138,14 @@ def run_game(gs: GameState, debug: bool = False) -> list[dict]:
                 _log_turn(game_log, gs.turn_count, raw, action, None, dm_decision, dm_decision.message)
                 continue
 
-        # ── Execute action ────────────────────────────────────────────────────
         result = execute_action(action, gs)
 
-        # ── Drama Manager post-execution ──────────────────────────────────────
         if action.category != ActionCategory.EXCEPTIONAL:
             dm_decision = dm.evaluate(action, result)
 
         if debug and dm_decision.action != "allow":
             print(f"  [DM] {dm_decision.log_entry}")
 
-        # ── Generate and print response ───────────────────────────────────────
         response = generate_response(
             action_verb=action.verb,
             action_target=action.target,
@@ -191,12 +157,10 @@ def run_game(gs: GameState, debug: bool = False) -> list[dict]:
         print()
         print(_wrap(response))
 
-        # ── DM hint/cause message ─────────────────────────────────────────────
         if dm_decision.action in ("hint", "cause") and dm_decision.message:
             print()
             print(_wrap(f"  *{dm_decision.message}*"))
 
-        # ── Clue discovery notification ───────────────────────────────────────
         if result.clue_discovered:
             clue = next(
                 (c for c in gs.crime_state.get("clues", [])
@@ -209,12 +173,11 @@ def run_game(gs: GameState, debug: bool = False) -> list[dict]:
                      if o.clue_id == result.clue_discovered),
                     None
                 )
-                # Clean truncated names: strip trailing possessives/prepositions
                 import re as _re
                 raw_name = obj.name if obj else result.clue_discovered
                 evidence_name = _re.sub(r"\s+(?:on|in|at|of|from)\s+\S+['\'s]*$", "", raw_name, flags=_re.I).strip(" ,.;:'")
                 print()
-                print(f"  📋 EVIDENCE LOGGED: {evidence_name}")
+                print(f"EVIDENCE LOGGED: {evidence_name}")
                 print(_wrap(clue["description"], indent="     "))
                 if _clues_needed(gs) > 0:
                     print(f"     Clues found: {len(gs.player.discovered_clues)} | "
@@ -223,7 +186,6 @@ def run_game(gs: GameState, debug: bool = False) -> list[dict]:
                     print(f"     Clues found: {len(gs.player.discovered_clues)} | Enough evidence to accuse")
                     print(_wrap(_accusation_guidance(gs), indent="     "))
 
-        # ── Win/lose ──────────────────────────────────────────────────────────
         if result.game_won:
             _print_win(gs)
             break
@@ -239,7 +201,6 @@ def run_game(gs: GameState, debug: bool = False) -> list[dict]:
 
 
 def _accusation_guidance(gs: GameState) -> str:
-    """Tell the player what accusation is now possible and how to reason about it."""
     try:
         from engine.action_executor import _strongest_suspect
         lead = _strongest_suspect(gs)
@@ -268,7 +229,7 @@ def _print_win(gs: GameState) -> None:
     backstory = gs.crime_state.get("hidden_backstory", "")
     print()
     print("=" * 64)
-    print("  ✅  CASE SOLVED")
+    print("CASE SOLVED")
     print("=" * 64)
     print(_wrap(
         f"\n  You've done it. {culprit.get('name', 'The killer')} is under arrest.\n"
@@ -284,7 +245,7 @@ def _print_win(gs: GameState) -> None:
 def _print_lose(gs: GameState) -> None:
     print()
     print("=" * 64)
-    print("  ❌  INVESTIGATION FAILED")
+    print("INVESTIGATION FAILED")
     print("=" * 64)
     print(_wrap(
         "\n  Critical evidence has been destroyed or a key witness is unreachable.\n"
@@ -304,9 +265,6 @@ def _log_turn(
         "response_preview": response[:80] if response else None,
     })
 
-
-# ─── Formatting ───────────────────────────────────────────────────────────────
-
 def _wrap(text: str, width: int = 72, indent: str = "  ") -> str:
     lines = text.split("\n")
     wrapped = []
@@ -318,14 +276,9 @@ def _wrap(text: str, width: int = 72, indent: str = "  ") -> str:
             wrapped.append("")
     return "\n".join(wrapped)
 
-
-# ─── Entry point ──────────────────────────────────────────────────────────────
-
 def main() -> None:
     args = parse_args()
 
-    # Load or generate crime state. If --crime-state is omitted, Phase 2 now
-    # calls the Phase 1-style generator directly and then builds the game world.
     if args.crime_state:
         if not os.path.exists(args.crime_state):
             print(f"Error: crime state file not found: {args.crime_state}")
@@ -345,16 +298,12 @@ def main() -> None:
 
     print_banner(crime_state)
 
-    # Build game world
     gs = build_game_world(crime_state)
 
-    # Print intro
     print_intro(gs)
 
-    # Run game
     game_log = run_game(gs, debug=args.debug)
 
-    # Save log
     if args.save_log:
         ts = datetime.now().strftime("%Y%m%d_%H%M%S")
         log_path = os.path.join(OUTPUT_DIR, f"game_log_{ts}.json")
@@ -374,7 +323,7 @@ def main() -> None:
                     "accommodations": gs.accommodations_made,
                 }
             }, f, indent=2)
-        print(f"\n  💾  Game log saved → {log_path}")
+        print(f"\n Game log saved → {log_path}")
 
 
 if __name__ == "__main__":

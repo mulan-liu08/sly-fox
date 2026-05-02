@@ -1,17 +1,3 @@
-"""
-world/world_generator.py — Converts a Phase 1 crime state JSON into a
-fully populated GameState ready for interactive play.
-
-Steps:
-  1. Extract locations from clue locations, timeline events, and setting
-  2. Generate room descriptions and connections via LLM
-  3. Create GameObject for each clue/evidence item
-  4. Create NPC for each suspect + culprit
-  5. Build PlotPoints from the clue dependency chain
-  6. Build CausalLinks between plot points
-  7. Return a complete GameState
-"""
-
 from __future__ import annotations
 import json
 import re
@@ -24,40 +10,28 @@ from world.game_state import (
     PlotPointStatus, NPCStatus
 )
 
-
-# ─── Main entry point ─────────────────────────────────────────────────────────
-
 def build_game_world(crime_state: dict[str, Any]) -> GameState:
-    """
-    Convert a Phase 1 crime state JSON into a playable GameState.
-    """
-    print("🌍  Building game world from crime state…")
+    print("Building game world from crime state…")
 
-    # 1. Extract and generate rooms
-    print("    Extracting locations…", end=" ", flush=True)
+    print("Extracting locations…", end=" ", flush=True)
     rooms = _generate_rooms(crime_state)
-    print(f"✓  ({len(rooms)} rooms)")
+    print(f"({len(rooms)} rooms)")
 
-    # 2. Create objects (clues + evidence + flavor objects)
-    print("    Creating objects…", end=" ", flush=True)
+    print("Creating objects…", end=" ", flush=True)
     objects = _create_objects(crime_state, rooms)
-    print(f"✓  ({len(objects)} objects)")
+    print(f"({len(objects)} objects)")
 
-    # 3. Create NPCs
     print("    Creating NPCs…", end=" ", flush=True)
     npcs = _create_npcs(crime_state, rooms)
-    print(f"✓  ({len(npcs)} NPCs)")
+    print(f"({len(npcs)} NPCs)")
 
-    # 4. Build plot points from clue chain
     print("    Building plot points…", end=" ", flush=True)
     plot_points = _build_plot_points(crime_state)
-    print(f"✓  ({len(plot_points)} plot points)")
+    print(f"({len(plot_points)} plot points)")
 
-    # 5. Build causal links
     causal_links = _build_causal_links(crime_state, plot_points)
-    print(f"    Causal links: {len(causal_links)}")
+    print(f"Causal links: {len(causal_links)}")
 
-    # 6. Place player at entry point
     entry_room = _get_entry_room(rooms)
     player = Player(location=entry_room)
 
@@ -71,30 +45,21 @@ def build_game_world(crime_state: dict[str, Any]) -> GameState:
         crime_state=crime_state,
     )
 
-    # The intro places the detective at the crime scene, so the arrival
-    # plot point should not remain as a stale DM target.
     state.mark_plot_point_done("arrive_at_scene")
 
-    # Unlock initial available plot points
     state.get_available_plot_points()
 
-    print("✅  Game world ready.")
+    print("Game world ready.")
     return state
 
 
-# ─── Room generation ─────────────────────────────────────────────────────────
-
 def _generate_rooms(crime_state: dict) -> dict[str, Room]:
-    """
-    Extract all mentioned locations, generate descriptions and connections.
-    """
     setting  = crime_state["setting"]["location"]
     clues    = crime_state.get("clues", [])
     timeline = crime_state.get("timeline", [])
 
-    # Collect all location strings mentioned
     raw_locations = set()
-    raw_locations.add("entrance")   # always have an entry point
+    raw_locations.add("entrance") 
     raw_locations.add("victim_office")
 
     for c in clues:
@@ -102,12 +67,10 @@ def _generate_rooms(crime_state: dict) -> dict[str, Room]:
         if loc:
             raw_locations.add(_slugify(loc))
 
-    # Always include a few standard locations
     standard = ["security_office", "common_area", "corridor"]
     for s in standard:
         raw_locations.add(s)
 
-    # Ask LLM to generate room data
     prompt = (
         f"You are designing a text adventure game set in: {setting}\n\n"
         "Generate a JSON object with a 'rooms' array. Each room must have:\n"
@@ -153,7 +116,6 @@ def _generate_rooms(crime_state: dict) -> dict[str, Room]:
 
 
 def _fallback_rooms(crime_state: dict) -> list[dict]:
-    """Minimal fallback rooms if LLM fails."""
     setting = crime_state["setting"]["location"]
     return [
         {"id": "entrance",       "name": "Main Entrance",    "description": f"The entrance to {setting}.", "exits": {"north": "corridor"}},
@@ -166,13 +128,6 @@ def _fallback_rooms(crime_state: dict) -> list[dict]:
 
 
 def _starter_access_item(crime_state: dict[str, Any]) -> tuple[str, str]:
-    """Return a setting-appropriate starter item for the entrance.
-
-    Earlier versions always placed a ``security keycard`` at the start,
-    which worked for the observatory test case but felt wrong for generated
-    historical/manor mysteries.  This helper keeps the object generic and
-    adapts it to the generated setting/date.
-    """
     setting = crime_state.get("setting", {}) or {}
     location = str(setting.get("location", "")).lower()
     date_text = str(setting.get("date", "")).lower()
@@ -213,9 +168,6 @@ def _starter_access_item(crime_state: dict[str, Any]) -> tuple[str, str]:
         "A small key or access token left near the entrance. It may help you move deeper into the scene.",
     )
 
-
-# ─── Object creation ──────────────────────────────────────────────────────────
-
 def _create_objects(crime_state: dict, rooms: dict) -> dict[str, GameObject]:
     objects: dict[str, GameObject] = {}
     clues = crime_state.get("clues", [])
@@ -223,7 +175,6 @@ def _create_objects(crime_state: dict, rooms: dict) -> dict[str, GameObject]:
 
     for clue in clues:
         obj_id   = clue["id"]
-        # Place real clues in victim_office or nearest matching room
         raw_loc  = _slugify(clue.get("location", "victim_office"))
         room_id  = raw_loc if raw_loc in rooms else _best_room_match(raw_loc, room_ids)
 
@@ -238,20 +189,15 @@ def _create_objects(crime_state: dict, rooms: dict) -> dict[str, GameObject]:
         )
         objects[obj_id] = obj
 
-        # Add to room's object list
         if room_id in rooms:
             if obj_id not in rooms[room_id].objects:
                 rooms[room_id].objects.append(obj_id)
 
-        # Hidden clues with prerequisites start as hidden
         if clue.get("prerequisite_clue_id"):
             obj.location = "hidden_" + room_id
             if obj_id in rooms.get(room_id, Room("","","",{},[],"")).objects:
                 rooms[room_id].objects.remove(obj_id)
 
-    # Add a few flavor objects to make the world feel alive. Keep them
-    # setting-neutral so generated historical/non-technical mysteries do not
-    # get an accidental modern access object.
     access_name, access_desc = _starter_access_item(crime_state)
     flavor = [
         GameObject(id="notebook", name="case notebook",
@@ -272,9 +218,6 @@ def _create_objects(crime_state: dict, rooms: dict) -> dict[str, GameObject]:
 
     return objects
 
-
-# ─── NPC creation ─────────────────────────────────────────────────────────────
-
 def _create_npcs(crime_state: dict, rooms: dict) -> dict[str, NPC]:
     npcs: dict[str, NPC] = {}
     room_ids = list(rooms.keys())
@@ -288,14 +231,12 @@ def _create_npcs(crime_state: dict, rooms: dict) -> dict[str, NPC]:
          "_is_culprit": True}
     ]
 
-    # Assign each NPC a starting room
     npc_rooms = ["security_office", "common_area", "suspect_lab", "corridor", "victim_office"]
     for i, char in enumerate(all_chars):
         npc_id   = _slugify(char["name"])
         is_culprit = char.get("_is_culprit", False) or \
                      char["name"] == crime_state["culprit"]["name"]
 
-        # Place culprit in their lab if it exists, else corridor
         if is_culprit:
             room_id = "suspect_lab" if "suspect_lab" in rooms else "corridor"
         else:
@@ -303,7 +244,6 @@ def _create_npcs(crime_state: dict, rooms: dict) -> dict[str, NPC]:
             if room_id not in rooms:
                 room_id = room_ids[i % len(room_ids)]
 
-        # Build locked facts — facts the NPC reveals only after specific clues found
         locked_facts = []
         for clue in crime_state.get("clues", []):
             if clue.get("points_to") == char["name"]:
@@ -345,18 +285,9 @@ def _create_npcs(crime_state: dict, rooms: dict) -> dict[str, NPC]:
 
     return npcs
 
-
-# ─── Plot point construction ──────────────────────────────────────────────────
-
 def _build_plot_points(crime_state: dict) -> dict[str, PlotPoint]:
-    """
-    Build plot points from the clue dependency chain.
-    Each clue = one plot point. Chain clues become prerequisites.
-    Plus meta plot points: arrive_at_scene, interview_*, make_accusation.
-    """
     plot_points: dict[str, PlotPoint] = {}
 
-    # Meta: arrival
     plot_points["arrive_at_scene"] = PlotPoint(
         id="arrive_at_scene",
         description="Arrive at the crime scene and examine the victim's body.",
@@ -366,7 +297,6 @@ def _build_plot_points(crime_state: dict) -> dict[str, PlotPoint]:
         effects={"scene_examined": True},
     )
 
-    # One plot point per clue
     for clue in crime_state.get("clues", []):
         prereqs = ["arrive_at_scene"]
         if clue.get("prerequisite_clue_id"):
@@ -381,7 +311,6 @@ def _build_plot_points(crime_state: dict) -> dict[str, PlotPoint]:
             effects={f"{clue['id']}_status": "discovered"},
         )
 
-    # One plot point per suspect interview
     for suspect in crime_state.get("suspects", []):
         pp_id = f"interview_{_slugify(suspect['name'])}"
         plot_points[pp_id] = PlotPoint(
@@ -393,7 +322,6 @@ def _build_plot_points(crime_state: dict) -> dict[str, PlotPoint]:
             effects={f"{_slugify(suspect['name'])}_status": "interviewed"},
         )
 
-    # Accusation — requires MIN_CLUES_TO_ACCUSE clues discovered
     from config import MIN_CLUES_TO_ACCUSE
     real_clues = [c["id"] for c in crime_state.get("clues", []) if not c.get("is_red_herring")]
     accusation_prereqs = real_clues[:MIN_CLUES_TO_ACCUSE]
@@ -409,18 +337,10 @@ def _build_plot_points(crime_state: dict) -> dict[str, PlotPoint]:
 
     return plot_points
 
-
-# ─── Causal link construction ─────────────────────────────────────────────────
-
 def _build_causal_links(
     crime_state: dict,
     plot_points: dict[str, PlotPoint]
 ) -> list[CausalLink]:
-    """
-    Build causal links from clue prerequisites.
-    A causal link (A → B, condition C) means:
-    C must remain true from after A executes until B executes.
-    """
     links: list[CausalLink] = []
     clue_map = {c["id"]: c for c in crime_state.get("clues", [])}
 
@@ -437,7 +357,6 @@ def _build_causal_links(
             )
             links.append(link)
 
-    # Accusation requires all key evidence to be intact
     for clue in crime_state.get("clues", []):
         if not clue.get("is_red_herring"):
             link = CausalLink(
@@ -452,11 +371,7 @@ def _build_causal_links(
 
     return links
 
-
-# ─── Helpers ──────────────────────────────────────────────────────────────────
-
 def _slugify(text: str) -> str:
-    """Convert a string to a snake_case id."""
     text = text.lower()
     text = re.sub(r"[^a-z0-9\s_]", "", text)
     text = re.sub(r"\s+", "_", text.strip())
@@ -464,16 +379,9 @@ def _slugify(text: str) -> str:
 
 
 def _clue_to_object_name(description: str) -> str:
-    """Extract a short, player-facing object name from a clue description.
-
-    Generated clues often start with adjectives ("A small, ornate...").  Avoid
-    naming an object only "small" or "faint"; keep enough noun phrase for the
-    player to know what to examine.
-    """
     desc = str(description or "").strip()
     low = desc.lower()
 
-    # Common patterns from generated mysteries.
     patterns = [
         ("cologne", "lingering cologne scent"),
         ("residue", "suspicious residue"),
@@ -499,17 +407,13 @@ def _clue_to_object_name(description: str) -> str:
     ]
     for needle, label in patterns:
         if needle in low:
-            # Preserve useful modifiers for common objects where possible.
             if needle in {"button", "rug", "letter", "note", "key", "bottle", "vial"}:
                 break
             return label
 
-    # Remove leading article and stop before location/prepositional boilerplate.
     text = re.sub(r"^(?:a|an|the)\s+", "", desc, flags=re.I)
     text = re.split(r"\b(?:found|discovered|lying|located)\b", text, maxsplit=1, flags=re.I)[0]
 
-    # If the first comma-separated chunk is only an adjective, include the next
-    # chunk so "small, ornate rug" does not become just "small".
     chunks = [c.strip() for c in text.split(",") if c.strip()]
     bad_single = {"small", "faint", "tiny", "unusual", "strange", "single", "old", "worn", "dark", "blank", "torn"}
     if len(chunks) >= 2 and len(chunks[0].split()) == 1 and chunks[0].lower() in bad_single:
@@ -528,12 +432,9 @@ def _clue_to_object_name(description: str) -> str:
         if len(kept) >= 5:
             break
     name = " ".join(kept).strip(' ,.;:')
-    # Strip trailing possessives like "Lord Finch's" → stop before them
     name = re.sub(r"\b\w+'s$", "", name).strip(" ,.;:")
-    # Strip trailing prepositions: "on Lord", "in the", etc.
     name = re.sub(r"\s+(?:on|in|at|near|of|from|by|under|above|beside)\s+\S+$", "", name, flags=re.I).strip(" ,.;:")
 
-    # Final guard against useless one-word adjectives.
     if name.lower() in bad_single or len(name) < 3:
         for noun in ("button", "rug", "bottle", "vial", "letter", "note", "key", "cup", "pad", "cigar", "book", "envelope"):
             if noun in low:
@@ -543,17 +444,13 @@ def _clue_to_object_name(description: str) -> str:
 
 
 def _best_room_match(slug: str, room_ids: list[str]) -> str:
-    """Find the best matching room id for a slugified location string."""
-    # Try substring match
     for rid in room_ids:
         if rid in slug or slug in rid:
             return rid
-    # Fall back to victim_office
     return "victim_office" if "victim_office" in room_ids else (room_ids[0] if room_ids else "entrance")
 
 
 def _get_entry_room(rooms: dict[str, Room]) -> str:
-    """Return the starting room id for the player."""
     if "entrance" in rooms:
         return "entrance"
     if "corridor" in rooms:

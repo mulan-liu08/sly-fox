@@ -1,12 +1,3 @@
-"""
-phase1_generator.py — Lightweight Phase 1 crime-state generation for Phase 2.
-
-This lets the interactive game start from a freshly generated crime state instead
-of requiring a pre-existing crime_state_*.json file. It is based on the Phase 1
-Sly Fox schema and prompt, but only generates the structured crime state needed
-by the Phase 2 world builder.
-"""
-
 from __future__ import annotations
 
 import json
@@ -28,7 +19,6 @@ CRIME_GEN_SYSTEM = (
 
 
 def generate_crime_state(seed_theme: str = "", save: bool = True) -> tuple[dict[str, Any], str | None]:
-    """Generate and optionally save a Phase 1-compatible crime state."""
     prompt = _build_crime_prompt(seed_theme)
     last_error: Exception | None = None
 

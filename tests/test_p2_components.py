@@ -1,20 +1,7 @@
-"""
-tests/test_p2_components.py — Unit tests for Phase 2 non-LLM components.
-
-Tests:
-  - GameState: plot point unlocking, clue discovery, solvability check
-  - ActionExecutor: move, examine, take, accuse (correct + wrong + too early)
-  - DramaManager: block exception, hint after stuck, accusation guard
-  - WorldGenerator: room slugification, object creation
-
-Run with: python tests/test_p2_components.py
-"""
-
 import sys
 import os
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
-# Stub API key
 os.environ["GEMINI_API_KEY"] = "stub"
 
 from world.game_state import (
@@ -24,9 +11,6 @@ from world.game_state import (
 from engine.action_executor import execute_action, ExecutionResult
 from engine.action_interpreter import InterpretedAction
 from world.world_generator import _slugify, _clue_to_object_name, _best_room_match
-
-
-# ─── Fixtures ─────────────────────────────────────────────────────────────────
 
 SAMPLE_CRIME_STATE = {
     "setting": {"location": "Test Facility", "date": "Oct 26", "time_of_crime": "11pm"},
@@ -85,7 +69,6 @@ SAMPLE_CRIME_STATE = {
 
 
 def _make_game_state() -> GameState:
-    """Build a minimal GameState for testing."""
     rooms = {
         "entrance":     Room("entrance", "Entrance", "The main entrance.", {"north": "corridor"}, [], []),
         "corridor":     Room("corridor", "Corridor", "A long corridor.", {"south": "entrance", "east": "victim_office"}, [], []),
@@ -139,8 +122,6 @@ def _make_action(verb, target=None, category=ActionCategory.CONSISTENT, pp_id=No
     )
 
 
-# ─── Tests ────────────────────────────────────────────────────────────────────
-
 def test_move_valid():
     gs = _make_game_state()
     action = _make_action("move", "north")
@@ -172,10 +153,8 @@ def test_examine_clue_discovers_it():
 def test_examine_clue_unlocks_dependent():
     gs = _make_game_state()
     gs.player.location = "victim_office"
-    # Discover clue_01
     action = _make_action("examine", "chemical scent", ActionCategory.CONSTITUENT)
     execute_action(action, gs)
-    # clue_03 should now be accessible (moved from hidden_forensics_lab)
     assert gs.objects["clue_03"].location == "forensics_lab"
     print("  PASS: discovering clue_01 unlocks dependent clue_03")
 
@@ -201,10 +180,9 @@ def test_accuse_too_early():
 
 def test_accuse_correct():
     gs = _make_game_state()
-    # Give player enough clues AND interview the culprit first (required by game logic)
     gs.player.discovered_clues = ["clue_01", "clue_03", "clue_extra"]
-    gs.player.location = "corridor"   # Dr. Reed is in corridor
-    gs.player.interviewed_npcs.append("dr_reed")  # must interview before accusing
+    gs.player.location = "corridor"
+    gs.player.interviewed_npcs.append("dr_reed") 
     action = _make_action("accuse", "reed", ActionCategory.CONSTITUENT, "reveal_culprit")
     result = execute_action(action, gs)
     assert result.success, f"Expected success but got: {result.narrative_hint}"
@@ -224,9 +202,7 @@ def test_accuse_wrong():
 
 def test_plot_point_unlocking():
     gs = _make_game_state()
-    # clue_03 should be locked initially
     assert gs.plot_points["clue_03"].status == PlotPointStatus.LOCKED
-    # After marking arrive_at_scene and clue_01 done
     gs.mark_plot_point_done("arrive_at_scene")
     gs.mark_plot_point_done("clue_01")
     available = gs.get_available_plot_points()
@@ -238,7 +214,6 @@ def test_plot_point_unlocking():
 def test_solvability():
     gs = _make_game_state()
     assert gs.is_solvable()
-    # Destroy all evidence
     for obj in gs.objects.values():
         obj.location = "destroyed"
     assert not gs.is_solvable()
@@ -282,9 +257,6 @@ def test_inventory_display():
     assert result.success
     assert "inventory:" in result.narrative_hint
     print("  PASS: inventory command returns hint")
-
-
-# ─── Runner ───────────────────────────────────────────────────────────────────
 
 if __name__ == "__main__":
     tests = [

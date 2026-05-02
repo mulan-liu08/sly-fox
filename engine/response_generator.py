@@ -1,11 +1,3 @@
-"""
-engine/response_generator.py — Generates player-facing responses.
-
-The response layer is intentionally deterministic for core game feedback
-(movement, inventory, room descriptions, NPC interviews, evidence logging).
-The LLM is only used as a last resort for genuinely open-ended narration.
-"""
-
 from __future__ import annotations
 
 import re
@@ -32,10 +24,8 @@ def generate_response(
     dm_decision: DMDecision,
     game_state: GameState,
 ) -> str:
-    """Generate the player-facing text response for this turn."""
     hint = execution.narrative_hint or ""
 
-    # ── Deterministic structured hints ───────────────────────────────────────
     if hint.startswith("help:"):
         return hint[5:]
 
@@ -134,14 +124,11 @@ def generate_response(
     if hint.startswith("case_answer:"):
         return hint.split(":", 1)[1]
 
-    # Failed commands and plain executor messages should not be rewritten by an LLM.
     if not execution.success:
         return hint or f"You try to {action_verb}, but nothing comes of it."
 
     if _is_plain_engine_message(hint):
         return hint
-
-    # ── Last-resort LLM narration for open-ended actions ─────────────────────
     prompt = _build_prompt(action_verb, action_target, execution, dm_decision, game_state)
     try:
         response = call_llm(
@@ -155,11 +142,7 @@ def generate_response(
     except Exception:
         return _fallback_response(hint, execution, game_state)
 
-
-# ─── Public room description helper ──────────────────────────────────────────
-
 def describe_room(game_state: GameState, room_id: str | None = None, visited_override: bool | None = None) -> str:
-    """Return a readable room description with object/NPC names, not internal ids."""
     rid = room_id or game_state.player.location
     room = game_state.rooms.get(rid)
     if not room:
@@ -205,8 +188,6 @@ def describe_room(game_state: GameState, room_id: str | None = None, visited_ove
     )
 
 
-# ─── Deterministic response helpers ──────────────────────────────────────────
-
 def _describe_object(obj_id: str, execution: ExecutionResult, gs: GameState) -> str:
     obj = gs.objects.get(obj_id)
     if not obj:
@@ -236,7 +217,6 @@ def _describe_npc(npc_id: str, gs: GameState) -> str:
 
 
 def _describe_talk(hint: str, execution: ExecutionResult, gs: GameState) -> str:
-    # Format from executor: talk:<id>:<name>:<alibi>[:facts]
     parts = hint.split(":", 4)
     npc_id = parts[1] if len(parts) > 1 else ""
     name = parts[2] if len(parts) > 2 else "The witness"
@@ -261,7 +241,6 @@ def _describe_talk(hint: str, execution: ExecutionResult, gs: GameState) -> str:
             safe_facts.append(safe_fact)
 
     if execution.npc_interviewed is None:
-        # Re-interview: short response, no LLM call needed
         short_aliases = [
             f"{npc.name} meets your gaze evenly. \"My statement stands as given. I have nothing to add.\"",
             f"{npc.name} sighs. \"I have already told you everything I know.\"",
@@ -270,9 +249,6 @@ def _describe_talk(hint: str, execution: ExecutionResult, gs: GameState) -> str:
         import hashlib
         idx = int(hashlib.md5(npc.id.encode()).hexdigest(), 16) % len(short_aliases)
         return short_aliases[idx]
-
-    # Try an LLM-written interview for naturalness, but only from already-sanitized
-    # public information. If it fails validation, fall back to deterministic text.
     llm_response = _try_llm_interview(npc, alibi, relationship, verification, safe_facts, gs)
     if llm_response:
         return llm_response
@@ -288,11 +264,6 @@ def _describe_talk(hint: str, execution: ExecutionResult, gs: GameState) -> str:
 
 
 def _try_llm_interview(npc, alibi: str, relationship: str, verification: str, safe_facts: list[str], gs: GameState) -> str | None:
-    """Use the response model to make suspect interviews sound natural.
-
-    The prompt intentionally contains only sanitized, public-facing information.
-    The validation step rejects meta-analysis or leaked hidden contradictions.
-    """
     victim = _victim_short(gs)
     case_place = gs.crime_state.get("setting", {}).get("location", "the crime scene")
     prompt = f"""
@@ -369,11 +340,6 @@ def _clean_dialogue_line(text: str, npc, gs: GameState) -> str:
 
 
 def _public_alibi_for(npc, raw_alibi: str, gs: GameState) -> str:
-    """Return what this suspect would plausibly say aloud.
-
-    The generated alibi can include detective-only contradictions or narrator
-    reasoning. Suspects state only the public-facing part of their alibi.
-    """
     clean = _strip_hidden_contradictions(raw_alibi)
     clean = _strip_meta_reasoning(clean)
     if not clean:
@@ -412,12 +378,10 @@ def _npc_intro(npc) -> str:
 
 
 def _speech_tag(npc) -> str:
-    # Avoid guessed gendered pronouns for generated characters.
     return f"{npc.name} adds,"
 
 
 def _first_person_statement(text: str, npc, gs: GameState | None = None) -> str:
-    """Convert third-person crime-state fields into safer first-person dialogue."""
     if not text:
         return text
     text = str(text).strip()
@@ -426,13 +390,9 @@ def _first_person_statement(text: str, npc, gs: GameState | None = None) -> str:
     first = name.split()[0].strip('"') if name else ""
     last = name.split()[-1].strip('"') if name else ""
 
-    # Remove common report-style prefixes.
     text = re.sub(r"^(?:claims?|claimed|stated|states|says|said)\s+(?:that\s+)?", "", text, flags=re.I).strip()
     text = re.sub(r"^(?:was|were)\b", "I was", text, flags=re.I).strip()
 
-    # Protect the victim's name tokens from being replaced.
-    # e.g. if suspect last name is "Finch" and victim is "Lord Finch",
-    # we must not replace "Finch" inside "Lord Finch" with "I".
     victim_name = ""
     if gs:
         victim_name = str(gs.crime_state.get("victim", {}).get("name", "") or "").strip()
@@ -441,13 +401,10 @@ def _first_person_statement(text: str, npc, gs: GameState | None = None) -> str:
     for token in sorted({name, first, last}, key=len, reverse=True):
         if not token:
             continue
-        # Skip if this token appears in the victim's name (prevents "Lord I's nephew")
         if token in victim_tokens and token != name:
             continue
         text = re.sub(r"\b" + re.escape(token) + r"\b", "I", text)
 
-    # Convert only likely references to the speaker. This is imperfect, so we
-    # repair common object/possessive mistakes afterward.
     replacements = [
         (r"\bherself\b", "myself"),
         (r"\bhimself\b", "myself"),
@@ -537,12 +494,9 @@ def _safe_relationship_summary(raw: str, npc, gs: GameState) -> str:
     low = text.lower()
     if not text:
         return ""
-    # Do not volunteer motive-level secrets in an ordinary first interview.
     if any(k in low for k in ("blackmail", "fraud", "affair", "secret", "scandal", "threat", "inheritance", "debt", "stole", "ruin", "resourceful", "resourcefulness", "wrong end", "rival")):
         return f"{victim} and I had a strained history. Some of it is private, but I am not hiding a murder."
     fp = _first_person_statement(text, npc, gs).rstrip(".")
-    # Avoid the awkward "knew each other through this:" phrasing.
-    # Just return the first-person relationship statement directly.
     if fp.lower().startswith("i ") or fp.lower().startswith("my "):
         return fp + "."
     return f"My connection to {victim}: {fp}."
@@ -564,7 +518,6 @@ def _verification_guidance(npc, gs: GameState) -> str:
 
 
 def _strip_meta_reasoning(text: str) -> str:
-    """Remove narrator analysis from generated suspect-facing text."""
     if not text:
         return ""
     pieces = re.split(r"(?<=[.!?])\s+", str(text).strip())
@@ -584,30 +537,20 @@ def _strip_meta_reasoning(text: str) -> str:
     return " ".join(kept).strip()
 
 def _victim_short(gs: GameState) -> str:
-    """A short, natural way to refer to the generated victim."""
     victim = gs.crime_state.get("victim", {}) if gs else {}
     name = str(victim.get("name") or "the victim").strip()
     if not name or name.lower() == "the victim":
         return "the victim"
     parts = name.split()
-    # Keep titles such as Lord/Lady/Dr./Professor with the surname.
     if len(parts) >= 2 and parts[0].rstrip('.').lower() in {"dr", "prof", "professor", "lord", "lady", "sir", "dame", "mr", "mrs", "ms", "miss"}:
         return f"{parts[0]} {parts[-1]}"
     return parts[-1]
 
 
 def _strip_hidden_contradictions(text: str) -> str:
-    """Remove detective-only contradictions from an alibi before an NPC speaks.
-
-    Phase 1 crime states often store an alibi plus a hidden contradiction in one
-    field. A suspect should state the public alibi, not volunteer the line that
-    exposes them. We keep text up to the first sentence that sounds like external
-    evidence or narrator commentary.
-    """
     if not text:
         return ""
     raw = str(text).strip()
-    # Split conservatively on sentence boundaries and semicolons.
     pieces = re.split(r"(?<=[.!?])\s+|;\s+", raw)
     hidden_markers = (
         "but ", "however", "security logs", "logs show", "camera footage shows",
@@ -621,14 +564,11 @@ def _strip_hidden_contradictions(text: str) -> str:
         if not clean:
             continue
         low = clean.lower()
-        # Keep the first alibi claim even if it begins with "claimed"; drop later
-        # contradiction/explanation pieces.
         if kept and any(marker in low for marker in hidden_markers):
             break
         if not kept and low.startswith(("but ", "however")):
             break
         kept.append(clean)
-        # If one complete public alibi sentence was found, it is usually enough.
         if len(kept) >= 2:
             break
     return " ".join(kept).strip() or raw
@@ -639,7 +579,6 @@ def _token_words(text: str) -> set[str]:
 
 
 def _overlaps(a: str, b: str) -> bool:
-    """Loose semantic overlap for generated clue/method/means text."""
     if not a or not b:
         return False
     wa = _token_words(a)
@@ -677,17 +616,14 @@ def _looks_like_body_or_method(text: str) -> bool:
 
 
 def _relationship_from_motive(motive: str) -> str:
-    """Extract a short relationship-like phrase from a generated motive."""
     text = str(motive or "").strip()
     if not text:
         return ""
-    # Prefer the first sentence/clause; it is usually enough for dialogue.
     first = re.split(r"(?<=[.!?])\s+|;\s+", text)[0].strip()
     return first[:180]
 
 
 def _culprit_public_verification(culprit: dict, victim: str) -> str:
-    """What the culprit would safely invite the detective to verify."""
     alibi = str(culprit.get("alibi") or "").lower()
     opportunity = str(culprit.get("opportunity") or "").lower()
     means = str(culprit.get("means") or "").lower()
@@ -718,11 +654,6 @@ def _wrong_accusation_weak_point(npc, missing: str, gs: GameState) -> str:
 
 
 def _culprit_clue_reason(clue: dict, gs: GameState) -> str:
-    """
-    Explain culprit-pointing evidence using actual crime state facts.
-    Grounded in what the crime state says about method, means, and opportunity —
-    no heuristic keyword matching that produces wrong conclusions.
-    """
     culprit_info = gs.crime_state.get("culprit", {}) or {}
     culprit = culprit_info.get("name", "the strongest suspect")
     victim = _victim_short(gs)
@@ -755,10 +686,6 @@ def _culprit_clue_reason(clue: dict, gs: GameState) -> str:
             f"{culprit}'s profile. Compare it against their alibi.")
 
 def _clue_implication_reason(clue: dict, gs: GameState) -> str:
-    """
-    Explain why a clue raises questions about a specific suspect.
-    Grounded in the suspect's crime state profile, not keyword heuristics.
-    """
     points_to = clue.get("points_to")
     if not points_to or points_to == "culprit":
         return ""
@@ -806,7 +733,6 @@ def _clue_implication_reason(clue: dict, gs: GameState) -> str:
 
 
 def _wrong_accusation_feedback(name: str, gs: GameState) -> str:
-    """Explain why a wrong accusation is weak and point back to case tools."""
     accused = None
     wanted = _norm(name)
     for npc in gs.npcs.values():

@@ -1,14 +1,3 @@
-"""
-engine/action_interpreter.py — Interprets player free-text input.
-
-Takes the player's raw text command and:
-  1. Parses it into a structured Action (verb + optional target)
-  2. Classifies it as CONSTITUENT, CONSISTENT, or EXCEPTIONAL
-  3. Returns an InterpretedAction ready for the game engine to execute
-
-Uses an LLM with a very low temperature for reliable classification.
-"""
-
 from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any
@@ -19,59 +8,49 @@ from config import ACTION_MODEL, ACTION_TEMP
 from world.game_state import ActionCategory, GameState
 
 
-# ─── Action verb enum ─────────────────────────────────────────────────────────
 
 KNOWN_VERBS = {
-    "move", "go", "walk", "run",         # navigation
-    "examine", "look", "inspect", "read", "smell", "touch",  # observation
-    "take", "pick_up", "grab",            # inventory
-    "drop", "put_down",                   # inventory
-    "talk", "ask", "interview", "question", "accuse",  # social
-    "use", "open", "unlock", "close",     # object interaction
-    "show", "give",                       # social + inventory
-    "search", "investigate",              # area search
-    "note", "record",                     # notebook
-    "wait", "rest",                       # time passing
-    "help", "inventory", "map", "case", "evidence", "clues", "suspects", "hint",  # meta
-    "destroy", "break", "damage",         # potentially exceptional
-    "kill", "attack",                     # exceptional
-    "hide", "remove", "steal",            # potentially exceptional
+    "move", "go", "walk", "run",         
+    "examine", "look", "inspect", "read", "smell", "touch",  
+    "take", "pick_up", "grab",           
+    "drop", "put_down",                  
+    "talk", "ask", "interview", "question", "accuse", 
+    "use", "open", "unlock", "close",    
+    "show", "give",                       
+    "search", "investigate",              
+    "note", "record",                   
+    "wait", "rest",                      
+    "help", "inventory", "map", "case", "evidence", "clues", "suspects", "hint",
+    "destroy", "break", "damage",         
+    "kill", "attack",                    
+    "hide", "remove", "steal",           
 }
 
 
 @dataclass
 class InterpretedAction:
-    verb: str                            # normalized verb
-    target: str | None                   # what the action is directed at
-    secondary: str | None                # e.g. who to show something to
-    raw_input: str                       # original player text
-    category: ActionCategory             # CONSTITUENT / CONSISTENT / EXCEPTIONAL
-    reasoning: str                       # why this category was assigned
-    affected_causal_links: list[str]     # link ids threatened (for EXCEPTIONAL)
-    plot_point_id: str | None            # which plot point this advances (if CONSTITUENT)
+    verb: str                            
+    target: str | None                   
+    secondary: str | None              
+    raw_input: str                      
+    category: ActionCategory            
+    reasoning: str                      
+    affected_causal_links: list[str]    
+    plot_point_id: str | None            
 
-
-# ─── Main interpreter ─────────────────────────────────────────────────────────
 
 def interpret_action(
     raw_input: str,
     game_state: GameState,
 ) -> InterpretedAction:
-    """
-    Parse and classify the player's text input.
-    """
-    # Truncate overly long input
     words = raw_input.strip().split()
     if len(words) > 12:
         raw_input = " ".join(words[:12]) + "…"
 
-    # First handle common text-adventure commands deterministically.
-    # These should not depend on the LLM returning valid JSON.
     simple = _parse_simple_command(raw_input, game_state)
     if simple is not None:
         return simple
 
-    # Build context for the LLM
     context = _build_context(game_state)
     prompt  = _build_prompt(raw_input, context, game_state)
 
@@ -85,13 +64,8 @@ def interpret_action(
         )
         return _parse_llm_result(result, raw_input, game_state)
     except Exception as exc:
-        # Safe fallback — treat as consistent if parsing fails, but still try
-        # to recover a basic verb/target from the raw command.
         recovered = _fallback_parse(raw_input, f"Could not parse input ({exc}). Treating as consistent.")
         return recovered
-
-
-# ─── Deterministic parser for common IF commands ──────────────────────────────
 
 def _make_action(
     *,
@@ -124,11 +98,6 @@ def _normalize_command_text(text: str) -> str:
 
 
 def _parse_simple_command(raw_input: str, gs: GameState) -> InterpretedAction | None:
-    """Parse common commands without the LLM.
-
-    This avoids malformed JSON and makes basic game-engine actions reliable.
-    The LLM remains useful for genuinely open-ended or ambiguous actions.
-    """
     text = raw_input.strip().lower()
     text = re.sub(r"[^a-z0-9_\s'-]", "", text)
     text = re.sub(r"\s+", " ", text).strip()
@@ -165,9 +134,6 @@ def _parse_simple_command(raw_input: str, gs: GameState) -> InterpretedAction | 
     if text in directions:
         return _make_action(verb="go", target=directions[text], raw_input=raw_input)
 
-    # Accept generated interaction commands as displayed, e.g.
-    # "to lab back entrance", "hidden exit", "examine_report", or
-    # "go to lab back entrance". The movement resolver will also normalize these.
     room = gs.rooms.get(gs.player.location)
     if room:
         norm_text = _normalize_command_text(text)
@@ -209,7 +175,6 @@ def _parse_simple_command(raw_input: str, gs: GameState) -> InterpretedAction | 
         return _make_action(verb="wait", target=None, raw_input=raw_input)
 
     patterns: list[tuple[str, str]] = [
-        # Important idiom: "take note of X" means observe/record X, not put X in inventory.
         (r"^(?:take note of|make note of|note|record)\s+(.+)$", "examine"),
         (r"^(?:pick up|pickup|take|get|grab)\s+(.+)$", "take"),
         (r"^(?:drop|put down|leave)\s+(.+)$", "drop"),
@@ -241,7 +206,6 @@ def _parse_simple_command(raw_input: str, gs: GameState) -> InterpretedAction | 
 
 
 def _fallback_parse(raw_input: str, reasoning: str) -> InterpretedAction:
-    """Very small fallback used only when the LLM parser fails."""
     text = raw_input.strip().lower()
     words = text.split()
     if words:
@@ -254,8 +218,6 @@ def _fallback_parse(raw_input: str, reasoning: str) -> InterpretedAction:
             return _make_action(verb="examine", target=_clean_target(" ".join(words[1:])) or "around", raw_input=raw_input, reasoning=reasoning)
 
     return _make_action(verb="unknown", target=None, raw_input=raw_input, reasoning=reasoning)
-
-# ─── Context builder ──────────────────────────────────────────────────────────
 
 def _build_context(gs: GameState) -> dict[str, Any]:
     room = gs.rooms.get(gs.player.location)
@@ -291,8 +253,6 @@ def _build_context(gs: GameState) -> dict[str, Any]:
         "clues_found": clues_found,
     }
 
-
-# ─── LLM prompt ───────────────────────────────────────────────────────────────
 
 def _build_prompt(raw_input: str, ctx: dict, gs: GameState) -> str:
     culprit_name = gs.crime_state.get("culprit", {}).get("name", "unknown")
@@ -340,8 +300,6 @@ IMPORTANT RULES:
 Return ONLY the JSON object, no other text."""
 
 
-# ─── Result parser ────────────────────────────────────────────────────────────
-
 def _parse_llm_result(
     result: dict,
     raw_input: str,
@@ -355,7 +313,6 @@ def _parse_llm_result(
     else:
         category = ActionCategory.CONSISTENT
 
-    # Extra safety: check accusation prerequisite
     verb = result.get("verb", "unknown")
     if verb == "accuse":
         from config import MIN_CLUES_TO_ACCUSE

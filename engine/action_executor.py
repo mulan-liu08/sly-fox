@@ -1,15 +1,3 @@
-"""
-engine/action_executor.py — Executes interpreted actions against the GameState.
-
-Handles all CONSTITUENT and CONSISTENT actions.
-EXCEPTIONAL actions are handed to the drama manager before execution.
-
-Returns an ExecutionResult with:
-  - success: bool
-  - state_changes: what changed in the world
-  - narrative_hint: short description for the response generator
-"""
-
 from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any
@@ -33,24 +21,15 @@ class ExecutionResult:
     game_over: bool = False
     game_won: bool = False
 
-
-# ─── Main executor ────────────────────────────────────────────────────────────
-
 def execute_action(
     action: InterpretedAction,
     gs: GameState,
 ) -> ExecutionResult:
-    """
-    Execute a CONSTITUENT or CONSISTENT action.
-    EXCEPTIONAL actions should be intercepted by drama manager first.
-    """
     verb = action.verb
 
-    # ── Navigation ────────────────────────────────────────────────────────────
     if verb in ("move", "go", "walk", "run"):
         return _do_move(action, gs)
 
-    # ── Observation ───────────────────────────────────────────────────────────
     if verb in ("examine", "look", "inspect", "read", "smell", "touch"):
         return _do_examine(action, gs)
 
@@ -78,14 +57,12 @@ def execute_action(
     if verb == "hint":
         return _do_hint(gs)
 
-    # ── Inventory ─────────────────────────────────────────────────────────────
     if verb in ("take", "pick_up", "grab"):
         return _do_take(action, gs)
 
     if verb in ("drop", "put_down"):
         return _do_drop(action, gs)
 
-    # ── Social / location questions ──────────────────────────────────────────
     if verb == "ask":
         investigation_answer = _answer_investigation_question(action, gs)
         if investigation_answer is not None:
@@ -104,33 +81,25 @@ def execute_action(
     if verb == "accuse":
         return _do_accuse(action, gs)
 
-    # ── Object interaction ────────────────────────────────────────────────────
     if verb in ("use", "open", "unlock"):
         return _do_use(action, gs)
 
-    # ── Notes ─────────────────────────────────────────────────────────────────
     if verb in ("note", "record"):
         return _do_note(action, gs)
 
-    # ── Wait ─────────────────────────────────────────────────────────────────
     if verb in ("wait", "rest"):
         return ExecutionResult(
             success=True,
             narrative_hint="Time passes. The hum of the facility continues.",
         )
 
-    # ── Help ─────────────────────────────────────────────────────────────────
     if verb == "help":
         return _do_help()
 
-    # ── Unknown ───────────────────────────────────────────────────────────────
     return ExecutionResult(
         success=False,
         narrative_hint=f"You consider trying to '{action.raw_input}' but aren't sure how.",
     )
-
-
-# ─── Action implementations ───────────────────────────────────────────────────
 
 def _do_move(action: InterpretedAction, gs: GameState) -> ExecutionResult:
     current_room = gs.rooms.get(gs.player.location)
@@ -164,21 +133,18 @@ def _do_move(action: InterpretedAction, gs: GameState) -> ExecutionResult:
 def _do_examine(action: InterpretedAction, gs: GameState) -> ExecutionResult:
     target = (action.target or "").lower().strip()
 
-    # Examining the room itself
     if not target or target in ("room", "around", "area", "here", "surroundings"):
         room = gs.rooms.get(gs.player.location)
         if room:
             room.visited = True
         return ExecutionResult(
             success=True,
-            narrative_hint="examine_room",  # signal to response gen to describe room
+            narrative_hint="examine_room", 
         )
 
     if target in ("exits", "ways out", "where can i go", "where to go"):
         return _do_exits(gs)
 
-    # Asking who/what is in the current room should describe the room, not
-    # look for an object literally named "people".
     if target in (
         "people", "person", "persons", "npc", "npcs", "anyone",
         "someone", "who", "occupants", "characters", "witnesses",
@@ -190,25 +156,18 @@ def _do_examine(action: InterpretedAction, gs: GameState) -> ExecutionResult:
             success=True,
             narrative_hint="room:" + gs.player.location,
         )
-
-    # Some generated worlds create interaction-like exits such as
-    # "examine_desk → autopsy_report". Treat "examine desk" as following that
-    # interaction, so players do not have to type "go to examine_desk".
     pseudo_move = _follow_interaction_exit(target, gs)
     if pseudo_move is not None:
         return pseudo_move
 
-    # Find object by name or id
     obj = _find_object(target, gs)
     if obj:
         obj.state["examined"] = True
         clue_found = None
         if obj.is_evidence and obj.clue_id not in gs.player.discovered_clues:
-            # Discover the clue
             gs.player.discovered_clues.append(obj.clue_id)
             clue_found = obj.clue_id
             gs.mark_plot_point_done(obj.clue_id)
-            # Unlock any clues that had this as prerequisite
             _unlock_dependent_clues(obj.clue_id, gs)
             return ExecutionResult(
                 success=True,
@@ -223,7 +182,6 @@ def _do_examine(action: InterpretedAction, gs: GameState) -> ExecutionResult:
             narrative_hint=f"examine_object:{obj.id}",
         )
 
-    # Find NPC
     npc = _find_npc(target, gs)
     if npc:
         return ExecutionResult(
@@ -238,12 +196,10 @@ def _do_examine(action: InterpretedAction, gs: GameState) -> ExecutionResult:
 
 
 def _do_search(action: InterpretedAction, gs: GameState) -> ExecutionResult:
-    """Thorough search of current room — may reveal hidden objects."""
     room = gs.rooms.get(gs.player.location)
     if not room:
         return ExecutionResult(False, narrative_hint="Nothing to search here.")
 
-    # Reveal hidden objects whose prerequisite clues have been found
     revealed = []
     for obj_id, obj in gs.objects.items():
         if obj.location.startswith("hidden_") and obj.clue_id:
@@ -360,14 +316,12 @@ def _do_talk(action: InterpretedAction, gs: GameState) -> ExecutionResult:
     if not npc:
         return ExecutionResult(False, narrative_hint=f"You don't see '{target}' here to talk to.")
 
-    # Mark as interviewed
     was_interviewed = npc.id in gs.player.interviewed_npcs
     if not was_interviewed:
         npc.status = NPCStatus.INTERVIEWED
         gs.player.interviewed_npcs.append(npc.id)
         gs.mark_plot_point_done(f"interview_{npc.id}")
 
-    # Gather what the NPC will say
     revealed_facts = list(npc.known_facts)
     for req_clue_id, fact in npc.locked_facts:
         if req_clue_id in gs.player.discovered_clues:
@@ -387,7 +341,6 @@ def _do_talk(action: InterpretedAction, gs: GameState) -> ExecutionResult:
 
 
 def _do_show(action: InterpretedAction, gs: GameState) -> ExecutionResult:
-    """Show an object from inventory to an NPC."""
     obj_target = (action.target or "").lower().strip()
     npc_target = (action.secondary or "").lower().strip()
 
@@ -399,7 +352,6 @@ def _do_show(action: InterpretedAction, gs: GameState) -> ExecutionResult:
     if not npc:
         return ExecutionResult(False, narrative_hint=f"You don't see '{npc_target}' to show it to.")
 
-    # Check if this object unlocks a locked fact for this NPC
     unlocked = []
     for req_clue_id, fact in npc.locked_facts:
         if obj.clue_id == req_clue_id or obj.id == req_clue_id:
@@ -430,7 +382,6 @@ def _do_accuse(action: InterpretedAction, gs: GameState) -> ExecutionResult:
     culprit_name = gs.crime_state.get("culprit", {}).get("name", "").lower()
     npc = _find_npc(target, gs)
     if not npc:
-        # Check by name fragment
         accused_name = target
         if culprit_name and (accused_name in culprit_name or culprit_name in accused_name):
             gs.game_won = True
@@ -504,9 +455,6 @@ def _do_help() -> ExecutionResult:
     return ExecutionResult(success=True, narrative_hint=help_text)
 
 
-
-# ─── Case-board / guidance helpers ───────────────────────────────────────────
-
 def _evidence_name(clue_id: str, gs: GameState) -> str:
     obj = next((o for o in gs.objects.values() if o.clue_id == clue_id), None)
     return obj.name if obj else clue_id.replace("_", " ")
@@ -517,10 +465,6 @@ def _clue_by_id(clue_id: str, gs: GameState) -> dict | None:
 
 
 def _clue_implication_reason(clue: dict, gs: GameState) -> str:
-    """
-    Explain why a clue is associated with a specific suspect.
-    Uses the suspect's actual crime-state profile rather than keyword guessing.
-    """
     points = clue.get("points_to")
     if not points or points == "culprit":
         return ""
@@ -529,7 +473,6 @@ def _clue_implication_reason(clue: dict, gs: GameState) -> str:
     is_red_herring = clue.get("is_red_herring", False)
     rh_explanation = clue.get("red_herring_explanation", "")
 
-    # Find the suspect's crime state data
     suspect = next(
         (s for s in gs.crime_state.get("suspects", []) if s.get("name") == points),
         None
@@ -542,14 +485,12 @@ def _clue_implication_reason(clue: dict, gs: GameState) -> str:
     missing      = (suspect.get("missing_element") or "").strip()
     victim       = _victim_short(gs)
 
-    # Check if the description directly mentions the suspect's name
     name_tokens = [t for t in re.findall(r"[a-zA-Z]{4,}", points.lower())]
     names_in_desc = any(t in desc for t in name_tokens)
 
     if names_in_desc:
         base = f"The evidence directly names or references {points}"
     elif relationship:
-        # Keep relationship short — first sentence only
         short_rel = relationship.split(".")[0].rstrip(",")
         base = f"Given {points}'s role ({short_rel}), this object's presence is notable"
     elif occupation:
@@ -572,11 +513,6 @@ def _clue_implication_reason(clue: dict, gs: GameState) -> str:
 
 
 def _culprit_clue_reason(clue: dict, gs: GameState) -> str:
-    """
-    Explain culprit-pointing evidence using the actual crime state facts.
-    Avoids heuristic keyword guessing — instead maps the clue description
-    against what the crime state says about means, method, and opportunity.
-    """
     culprit_data = gs.crime_state.get("culprit", {})
     culprit = culprit_data.get("name", "the culprit")
     victim = _victim_short(gs)
@@ -587,8 +523,6 @@ def _culprit_clue_reason(clue: dict, gs: GameState) -> str:
     opportunity = (culprit_data.get("opportunity", "") or "").lower()
     motive      = (culprit_data.get("motive", "") or "").lower()
 
-    # Check which dimension of the crime state this clue description overlaps with.
-    # Use word overlap rather than heuristic keyword lists.
     desc_words  = {w for w in re.findall(r"[a-zA-Z]{4,}", desc)}
     means_words = {w for w in re.findall(r"[a-zA-Z]{4,}", means)}
     method_words = {w for w in re.findall(r"[a-zA-Z]{4,}", method)}
@@ -608,7 +542,6 @@ def _culprit_clue_reason(clue: dict, gs: GameState) -> str:
     if desc_words & mot_words:
         return (f"This is relevant to motive: it connects to why {culprit} "
                 f"may have wanted {victim} dead.")
-    # Fallback: no strong overlap — state neutrally that this warrants investigation
     return (f"This physical evidence warrants attention: it has not been "
             f"fully accounted for and connects to {culprit}'s profile.")
 
@@ -694,10 +627,6 @@ def _suspect_scores(gs: GameState) -> tuple[dict[str, int], dict[str, list[str]]
             scores[points] += delta
             reasons[points].append(f"{clue_name} raises questions about this suspect")
 
-        # Only use explicit name mentions as a weak extra signal for non-culprit
-        # clues. Do not substring-match short nicknames like "Mac" inside words
-        # such as "machined", and do not let culprit clues accidentally implicate
-        # unrelated suspects through tool/occupation words.
         if points != "culprit":
             desc = (clue.get("description", "") + " " + clue_name).lower()
             for npc in gs.npcs.values():
@@ -709,7 +638,6 @@ def _suspect_scores(gs: GameState) -> tuple[dict[str, int], dict[str, list[str]]
                     scores[npc.name] += 1
                     reasons[npc.name].append(f"{clue_name} names or implies this suspect")
 
-    # Means/motive/opportunity completeness is useful detective reasoning.
     for npc in gs.npcs.values():
         if npc.is_culprit:
             if gs.player.discovered_clues:
@@ -735,7 +663,6 @@ def _next_step_hint(gs: GameState) -> str:
             f"then try: accuse {lead}."
         )
 
-    # Prefer visible, undiscovered evidence in the current room.
     room = gs.rooms.get(gs.player.location)
     if room:
         for oid in room.objects:
@@ -743,7 +670,6 @@ def _next_step_hint(gs: GameState) -> str:
             if obj and obj.is_evidence and obj.clue_id not in gs.player.discovered_clues:
                 return f"Something here matters. Examine the {obj.name}."
 
-    # Otherwise route to the nearest available, undiscovered evidence.
     target_obj = _next_available_evidence(gs)
     if target_obj:
         route = _route_to_room(gs, target_obj.location)
@@ -786,7 +712,6 @@ def _route_to_room(gs: GameState, dest_id: str) -> list[str] | None:
 
 
 def _route_steps_text(route: list[str]) -> str:
-    """Return player-facing route text without exposing internal labels like to_desk."""
     if not route:
         return ""
     steps = []
@@ -861,8 +786,6 @@ def _resolve_exit_target(room, target: str, gs: GameState) -> str | None:
         norm_variants = {_normalize(v) for v in variants if v}
         if norm_target in norm_variants:
             return room_id
-        # Allow a player to type just the meaningful part of a special exit:
-        # "lab back entrance" should match "to_lab_back_entrance".
         norm_dir = _normalize(direction)
         for prefix in ("to", "through", "into", "backto"):
             if norm_dir.startswith(prefix) and norm_target == norm_dir[len(prefix):]:
@@ -900,9 +823,6 @@ def _answer_investigation_question(action: InterpretedAction, gs: GameState) -> 
         ))
     return None
 
-
-# ─── Location / generated-interaction helpers ────────────────────────────────
-
 def _normalize(text: str) -> str:
     return "".join(ch for ch in text.lower() if ch.isalnum())
 
@@ -914,7 +834,6 @@ def _follow_interaction_exit(target: str, gs: GameState) -> ExecutionResult | No
     norm_target = _normalize(target)
     for direction, dest_id in room.exits.items():
         norm_dir = _normalize(direction)
-        # examine_desk should match desk, examine desk, or examine_desk.
         stripped = norm_dir
         for prefix in ("examine", "inspect", "read", "open", "use"):
             if stripped.startswith(prefix):
@@ -941,7 +860,6 @@ def _answer_location_question(action: InterpretedAction, gs: GameState) -> Execu
     if not room:
         return None
 
-    # Match requested location by room id or room name.
     wanted = _normalize(target)
     dest_id = None
     for rid, candidate in gs.rooms.items():
@@ -951,13 +869,11 @@ def _answer_location_question(action: InterpretedAction, gs: GameState) -> Execu
     if not dest_id:
         return None
 
-    # Direct exit from current room?
     for direction, rid in room.exits.items():
         if rid == dest_id:
             dest_name = gs.rooms[dest_id].name
             return ExecutionResult(True, narrative_hint=f"location:{dest_name} is {direction} from here.")
 
-    # Find a short path with BFS.
     from collections import deque
     queue = deque([(gs.player.location, [])])
     seen = {gs.player.location}
@@ -978,10 +894,7 @@ def _answer_location_question(action: InterpretedAction, gs: GameState) -> Execu
     return ExecutionResult(True, narrative_hint=f"location:You know of {gs.rooms[dest_id].name}, but you do not know a route from here yet.")
 
 
-# ─── Lookup helpers ───────────────────────────────────────────────────────────
-
 def _find_object(target: str, gs: GameState) -> "GameObject | None":
-    """Find an object in current room by name or id, allowing spaces/underscores."""
     room = gs.rooms.get(gs.player.location)
     candidates = (room.objects if room else []) + gs.player.inventory
     target_norm = _normalize(target)
@@ -1008,7 +921,6 @@ def _find_object_in_inventory(target: str, gs: GameState) -> "GameObject | None"
 
 
 def _find_npc(target: str, gs: GameState) -> "NPC | None":
-    """Find an NPC in current room by name or id, allowing spaces/underscores."""
     room = gs.rooms.get(gs.player.location)
     target_norm = _normalize(target)
 
@@ -1027,7 +939,6 @@ def _find_npc(target: str, gs: GameState) -> "NPC | None":
         npc = gs.npcs.get(nid)
         if npc and matches(npc):
             return npc
-    # Also search all NPCs if not found in room (for accuse only / broad references).
     for npc in gs.npcs.values():
         if matches(npc):
             return npc
@@ -1035,7 +946,6 @@ def _find_npc(target: str, gs: GameState) -> "NPC | None":
 
 
 def _unlock_dependent_clues(clue_id: str, gs: GameState) -> None:
-    """Move hidden objects into their rooms when their prerequisite clue is found."""
     for obj in gs.objects.values():
         if obj.location.startswith("hidden_") and obj.clue_id:
             for clue in gs.crime_state.get("clues", []):

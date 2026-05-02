@@ -1,29 +1,3 @@
-"""
-drama_manager/drama_manager.py — Template 2: Intervention and Accommodation.
-
-The Drama Manager (DM) sits between the action interpreter and the executor.
-It has three responsibilities:
-
-1. EXCEPTION DETECTION
-   When the interpreter flags an EXCEPTIONAL action, the DM checks which
-   causal links are threatened and decides how to respond.
-
-2. ACCOMMODATION (story repair)
-   If a causal link is broken, the DM repairs the story plan so the crime
-   can still be solved. This may involve:
-     - Moving a clue to a new location (if the original was destroyed)
-     - Having an NPC mention a clue in conversation (if evidence is gone)
-     - Generating a new path to the same information
-
-3. INTERVENTION (proactive nudging)
-   The DM monitors player progress and intervenes when:
-     - Player is stuck (N consecutive non-constituent actions)
-     - Player is about to shortcut to the ending prematurely
-     - A plot point needs to be caused (player missed something important)
-
-All DM decisions are logged for transparency in the demo video.
-"""
-
 from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import Any
@@ -37,48 +11,28 @@ from engine.action_interpreter import InterpretedAction
 from engine.action_executor import ExecutionResult, _next_step_hint
 
 
-# ─── DM decision types ────────────────────────────────────────────────────────
-
 @dataclass
 class DMDecision:
-    action: str          # "allow" | "block" | "accommodate" | "hint" | "cause"
-    message: str         # message to show player (if any)
-    log_entry: str       # internal log for demo transparency
+    action: str        
+    message: str        
+    log_entry: str      
     modified_state: dict = field(default_factory=dict)
     accommodation_result: str | None = None
 
-
-# ─── Main Drama Manager ───────────────────────────────────────────────────────
-
 class DramaManager:
-    """
-    Intervenes in the player-game loop to maintain story coherence and pacing.
-    """
 
     def __init__(self, game_state: GameState):
         self.gs = game_state
         self.log: list[str] = []
-
-    # ── Public API ────────────────────────────────────────────────────────────
 
     def evaluate(
         self,
         action: InterpretedAction,
         execution_result: ExecutionResult | None = None,
     ) -> DMDecision:
-        """
-        Called BEFORE execution for EXCEPTIONAL actions.
-        Called AFTER execution for CONSTITUENT/CONSISTENT actions.
-
-        Returns a DMDecision describing what the DM does.
-        """
-        # ── Pre-execution: exceptional actions ────────────────────────────────
         if action.category == ActionCategory.EXCEPTIONAL:
             return self._handle_exception(action)
 
-        # ── Post-execution: track progress ────────────────────────────────────
-        # Deterministic parsing often marks useful game actions as CONSISTENT,
-        # so use the executor result as the source of truth for progress.
         made_progress = bool(
             execution_result and (
                 execution_result.clue_discovered
@@ -101,15 +55,10 @@ class DramaManager:
         if action_was_productive:
             self.gs.consecutive_non_constituent = 0
         elif execution_result and execution_result.success and action.verb in {"go", "move", "walk", "run"}:
-            # Navigation is neutral: it should not instantly trigger hints, but
-            # repeated wandering can eventually invite a nudge.
             self.gs.consecutive_non_constituent = max(0, self.gs.consecutive_non_constituent - 1)
         else:
             self.gs.consecutive_non_constituent += 1
 
-        # Suppress unsolicited DM hints after productive or explicit guidance
-        # actions. The response itself is already useful, so an extra nudge feels
-        # intrusive. Players can still type HINT whenever they want help.
         if action_was_productive or action.verb in guidance_verbs:
             return DMDecision(
                 action="allow",
@@ -117,16 +66,13 @@ class DramaManager:
                 log_entry=f"DM: allowed {action.verb} ({action.category.value})",
             )
 
-        # ── Check if player is stuck ──────────────────────────────────────────
         if self.gs.consecutive_non_constituent >= HINT_AFTER_N_STUCK:
             return self._give_hint()
 
-        # ── Check if a plot point needs to be caused ─────────────────────────
         causer = self._check_for_causer()
         if causer:
             return causer
 
-        # ── Default: allow ────────────────────────────────────────────────────
         return DMDecision(
             action="allow",
             message="",
@@ -136,22 +82,14 @@ class DramaManager:
     def get_log(self) -> list[str]:
         return self.log
 
-    # ── Exception handling ────────────────────────────────────────────────────
 
     def _handle_exception(self, action: InterpretedAction) -> DMDecision:
-        """
-        An exceptional action was attempted. Decide: block or accommodate.
-        """
         self._log(f"EXCEPTION detected: {action.raw_input!r} | "
                   f"Affected links: {action.affected_causal_links}")
 
-        # Check if the game is still solvable AFTER this action
-        # Simulate: temporarily mark affected links as broken
         threatened_objects = self._get_threatened_objects(action)
 
         if not threatened_objects:
-            # The LLM flagged it as exceptional but we can't identify what breaks
-            # Be conservative: block it with an explanation
             entry = f"DM BLOCKED (no clear threat identified): {action.raw_input!r}"
             self._log(entry)
             return DMDecision(
@@ -160,12 +98,10 @@ class DramaManager:
                 log_entry=entry,
             )
 
-        # Try to accommodate — repair the story around the exception
         accommodation = self._accommodate(action, threatened_objects)
         if accommodation:
             return accommodation
 
-        # Accommodation failed — block the action
         entry = f"DM BLOCKED (accommodation failed): {action.raw_input!r}"
         self._log(entry)
         return DMDecision(
@@ -179,16 +115,6 @@ class DramaManager:
         action: InterpretedAction,
         threatened: list[str],
     ) -> DMDecision | None:
-        """
-        Attempt to repair the story plan so the crime can still be solved
-        even if the exceptional action is allowed.
-
-        Strategy:
-          1. For each threatened clue, generate an alternative way to reveal
-             the same information (another NPC mentions it, a copy exists, etc.)
-          2. If repair is possible, allow the action and apply the repair.
-          3. If not possible, return None (caller will block).
-        """
         clue_ids = [o for o in threatened if o.startswith("clue_")]
         if not clue_ids:
             return None
@@ -196,7 +122,6 @@ class DramaManager:
         for attempt in range(MAX_REPAIR_ATTEMPTS):
             repair = self._generate_repair(clue_ids, action)
             if repair:
-                # Apply the repair to the game state
                 self._apply_repair(repair)
                 entry = (
                     f"DM ACCOMMODATE (attempt {attempt+1}): "
@@ -219,7 +144,6 @@ class DramaManager:
         clue_ids: list[str],
         action: InterpretedAction,
     ) -> dict | None:
-        """Use LLM to generate a story repair plan."""
         crime = self.gs.crime_state
         clue_details = [
             c for c in crime.get("clues", []) if c["id"] in clue_ids
@@ -268,11 +192,9 @@ class DramaManager:
         return None
 
     def _apply_repair(self, repair: dict) -> None:
-        """Apply a repair plan to the game state."""
         new_room_id = repair.get("new_clue_location", "")
         new_source  = repair.get("new_clue_source", "")
 
-        # Move any threatened evidence objects to the new location
         for obj in self.gs.objects.values():
             if obj.is_evidence and obj.location in ("destroyed", "removed"):
                 if new_room_id and new_room_id in self.gs.rooms:
@@ -280,10 +202,9 @@ class DramaManager:
                     room = self.gs.rooms[new_room_id]
                     if obj.id not in room.objects:
                         room.objects.append(obj.id)
-                    obj.state["damaged"] = True  # flag it was tampered with
+                    obj.state["damaged"] = True 
                     break
 
-        # If source is an NPC, add the fact to their known_facts
         if new_source:
             for npc in self.gs.npcs.values():
                 if new_source.lower() in npc.name.lower():
@@ -293,7 +214,6 @@ class DramaManager:
                     break
 
     def _get_threatened_objects(self, action: InterpretedAction) -> list[str]:
-        """Return ids of objects/clues threatened by this action."""
         threatened = list(action.affected_causal_links)
         target = (action.target or "").lower()
         for obj in self.gs.objects.values():
@@ -319,14 +239,9 @@ class DramaManager:
             f"solve the crime. Better to proceed more carefully."
         )
 
-    # ── Proactive intervention ────────────────────────────────────────────────
 
     def _give_hint(self) -> DMDecision:
-        """Player is stuck — give a subtle in-world atmospheric nudge, not explicit navigation."""
         self.gs.consecutive_non_constituent = 0
-        # Use _generate_hint for an atmospheric, non-spoilery nudge.
-        # _next_step_hint gives explicit "go north, go east" instructions which
-        # go stale as the player moves and break immersion.
         available_pps = self.gs.get_available_plot_points()
         if available_pps:
             pp = available_pps[0]
@@ -339,7 +254,6 @@ class DramaManager:
         return DMDecision(action="hint", message=hint, log_entry=entry)
 
     def _generate_hint(self, plot_point_desc: str, location_hint: str) -> str:
-        """Generate an in-world hint without breaking the fourth wall."""
         room_name = self.gs.rooms.get(location_hint, None)
         room_str = room_name.name if room_name else location_hint.replace("_", " ")
 
@@ -366,13 +280,6 @@ class DramaManager:
             return fallback
 
     def _check_for_causer(self) -> DMDecision | None:
-        """Offer a proactive nudge at pacing intervals.
-
-        Earlier versions logged this as "auto-advancing" a plot point even
-        though it did not actually discover a clue. That was confusing in the
-        debug output and misleading for the demo. This now behaves as a visible
-        intervention/hint only.
-        """
         if self.gs.turn_count % 8 != 0 or self.gs.turn_count == 0:
             return None
 
@@ -389,7 +296,6 @@ class DramaManager:
         return None
 
     def _generate_causer_event(self, pp) -> str | None:
-        """Generate an in-world event that nudges the player toward a plot point."""
         try:
             prompt = (
                 "Generate a brief in-world event (1 sentence) that naturally draws "
@@ -413,13 +319,10 @@ class DramaManager:
             return None
 
     def _log(self, entry: str) -> None:
-        # Keep the log for --debug and saved game logs. Do not print here,
-        # because game.py already prints DM decisions in debug mode.
         self.log.append(f"[Turn {self.gs.turn_count}] {entry}")
 
 
 def _ensure_complete_sentence(text: str, fallback: str) -> str:
-    """Avoid printing visibly truncated LLM hints/events."""
     text = (text or "").strip()
     if not text:
         return fallback

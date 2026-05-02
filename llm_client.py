@@ -1,8 +1,3 @@
-"""
-llm_client.py — Gemini API wrapper for Phase 2.
-Uses google-genai SDK (not deprecated google.generativeai).
-"""
-
 from __future__ import annotations
 import json
 import re
