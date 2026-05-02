@@ -1,0 +1,106 @@
+{
+  "crime_state_summary": {
+    "victim": "Dr. Aris Thorne",
+    "culprit": "Dr. Evelyn Reed",
+    "setting": "Celestia Observatory, atop Mount Cinder, remote Sierra Nevada"
+  },
+  "turns": [
+    {
+      "turn": 1,
+      "input": "go north",
+      "verb": "go",
+      "category": "consistent",
+      "dm_action": "allow",
+      "response_preview": "**Observatory Common Area**\nThis central lounge is surprisingly warm and invitin"
+    },
+    {
+      "turn": 2,
+      "input": "talk to lena",
+      "verb": "talk",
+      "category": "consistent",
+      "dm_action": "allow",
+      "response_preview": "Lena Petrova gathers themself before answering, every word carefully controlled."
+    },
+    {
+      "turn": 3,
+      "input": "go west",
+      "verb": "go",
+      "category": "consistent",
+      "dm_action": "allow",
+      "response_preview": "**Main Corridor**\nA long, sterile corridor stretches out, illuminated by humming"
+    },
+    {
+      "turn": 4,
+      "input": "talk to anya",
+      "verb": "talk",
+      "category": "consistent",
+      "dm_action": "allow",
+      "response_preview": "Dr. Anya Sharma keeps their voice low, fingers worrying at the edge of their sle"
+    },
+    {
+      "turn": 5,
+      "input": "talk to evelyn",
+      "verb": "talk",
+      "category": "consistent",
+      "dm_action": "allow",
+      "response_preview": "Dr. Evelyn Reed remains composed, choosing each technical detail with care.\n\"Cla"
+    },
+    {
+      "turn": 6,
+      "input": "go south",
+      "verb": "go",
+      "category": "consistent",
+      "dm_action": "allow",
+      "response_preview": "**Dr. Reed's Private Lab**\nGleaming scientific equipment fills this lab, emittin"
+    },
+    {
+      "turn": 7,
+      "input": "go north",
+      "verb": "go",
+      "category": "consistent",
+      "dm_action": "allow",
+      "response_preview": "**Main Corridor** (you've been here before)\nA long, sterile corridor stretches o"
+    },
+    {
+      "turn": 8,
+      "input": "make coffee",
+      "verb": "unknown",
+      "category": "consistent",
+      "dm_action": "cause",
+      "response_preview": "You consider trying to 'make coffee' but aren't sure how."
+    },
+    {
+      "turn": 9,
+      "input": "go east",
+      "verb": "go",
+      "category": "consistent",
+      "dm_action": "allow",
+      "response_preview": "**Observatory Common Area** (you've been here before)\nThis central lounge is sur"
+    },
+    {
+      "turn": 10,
+      "input": "go north",
+      "verb": "go",
+      "category": "consistent",
+      "dm_action": "allow",
+      "response_preview": "**Main Dome Floor**\nThe colossal primary telescope dominates this vast, circular"
+    },
+    {
+      "turn": 11,
+      "input": "examine torn star chart page",
+      "verb": "examine",
+      "category": "consistent",
+      "dm_action": "allow",
+      "response_preview": "You examine the torn star chart page. A torn page from a rare 17th-century star "
+    }
+  ],
+  "dm_log": [],
+  "final_state": {
+    "clues_found": [
+      "clue_01"
+    ],
+    "turns": 12,
+    "won": false,
+    "accommodations": []
+  }
+}

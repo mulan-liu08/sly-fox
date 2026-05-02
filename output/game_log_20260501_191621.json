@@ -1,0 +1,262 @@
+{
+  "crime_state_summary": {
+    "victim": "Dr. Aris Thorne",
+    "culprit": "Dr. Evelyn Reed",
+    "setting": "Celestia Observatory, atop Mount Cinder, remote Sierra Nevada"
+  },
+  "turns": [
+    {
+      "turn": 1,
+      "input": "pick up security keycard",
+      "verb": "take",
+      "category": "consistent",
+      "dm_action": "allow",
+      "response_preview": "You take the security keycard and slip it into your coat pocket. It is now in yo"
+    },
+    {
+      "turn": 2,
+      "input": "go east",
+      "verb": "go",
+      "category": "consistent",
+      "dm_action": "allow",
+      "response_preview": "**Security Monitoring Room**\nA cramped room dominated by a bank of monitors disp"
+    },
+    {
+      "turn": 3,
+      "input": "talk to dr. julian vance",
+      "verb": "talk",
+      "category": "consistent",
+      "dm_action": "allow",
+      "response_preview": "Dr. Julian Vance answers in a way that fits their manner: Pompous, fiercely comp"
+    },
+    {
+      "turn": 4,
+      "input": "talk to marcus",
+      "verb": "talk",
+      "category": "consistent",
+      "dm_action": "allow",
+      "response_preview": "Marcus \"Mac\" O'Connell answers in a way that fits their manner: Gruff, by-the-bo"
+    },
+    {
+      "turn": 5,
+      "input": "go north",
+      "verb": "go",
+      "category": "consistent",
+      "dm_action": "allow",
+      "response_preview": "**Central Access Hallway**\nThis wide, well-lit hallway serves as the observatory"
+    },
+    {
+      "turn": 6,
+      "input": "go to staff common area",
+      "verb": "go",
+      "category": "consistent",
+      "dm_action": "allow",
+      "response_preview": "**Staff Common Area**\nThis spacious lounge offers a brief respite from work, fur"
+    },
+    {
+      "turn": 7,
+      "input": "talk to lena",
+      "verb": "talk",
+      "category": "consistent",
+      "dm_action": "allow",
+      "response_preview": "Lena Petrova answers in a way that fits their manner: Efficient, outwardly calm,"
+    },
+    {
+      "turn": 8,
+      "input": "go to west wing hallway",
+      "verb": "go",
+      "category": "consistent",
+      "dm_action": "cause",
+      "response_preview": "**West Wing Hallway**\nThis quieter hallway leads towards the observatory's prima"
+    },
+    {
+      "turn": 9,
+      "input": "take note of lingering aether cologne scent",
+      "verb": "take",
+      "category": "consistent",
+      "dm_action": "allow",
+      "response_preview": "You take the lingering Aether cologne scent and slip it into your coat pocket. I"
+    },
+    {
+      "turn": 10,
+      "input": "notice the lingering aether cologne scent",
+      "verb": "smell",
+      "category": "constituent",
+      "dm_action": "allow",
+      "response_preview": "You examine the lingering Aether cologne scent. A faint, lingering scent of a sp"
+    },
+    {
+      "turn": 11,
+      "input": "go north",
+      "verb": "go",
+      "category": "consistent",
+      "dm_action": "allow",
+      "response_preview": "**Thorne's Executive Office**\nA spacious, opulent office with a panoramic view o"
+    },
+    {
+      "turn": 12,
+      "input": "examine fluorescent neurotoxin residue",
+      "verb": "examine",
+      "category": "consistent",
+      "dm_action": "allow",
+      "response_preview": "You examine the fluorescent neurotoxin residue. A microscopic, crystalline resid"
+    },
+    {
+      "turn": 13,
+      "input": "go to secret_panel",
+      "verb": "go",
+      "category": "consistent",
+      "dm_action": "allow",
+      "response_preview": "**Thorne's Server Alcove**\nA small, hidden compartment behind a false wall, fill"
+    },
+    {
+      "turn": 14,
+      "input": "read encrypted journal entry",
+      "verb": "examine",
+      "category": "consistent",
+      "dm_action": "allow",
+      "response_preview": "You examine the encrypted journal entry. A cryptic entry in Thorne's encrypted d"
+    },
+    {
+      "turn": 15,
+      "input": "accuse dr. anya sharma",
+      "verb": "accuse",
+      "category": "consistent",
+      "dm_action": "allow",
+      "response_preview": "You accuse Dr. Anya Sharma, but the evidence does not hold together. You need a "
+    },
+    {
+      "turn": 16,
+      "input": "go back",
+      "verb": "go",
+      "category": "consistent",
+      "dm_action": "cause",
+      "response_preview": "**Thorne's Executive Office** (you've been here before)\nA spacious, opulent offi"
+    },
+    {
+      "turn": 17,
+      "input": "go south",
+      "verb": "go",
+      "category": "consistent",
+      "dm_action": "allow",
+      "response_preview": "**West Wing Hallway** (you've been here before)\nThis quieter hallway leads towar"
+    },
+    {
+      "turn": 18,
+      "input": "go west",
+      "verb": "go",
+      "category": "consistent",
+      "dm_action": "allow",
+      "response_preview": "**Main Observatory Dome**\nThe colossal dome of the Celestia Observatory looms ov"
+    },
+    {
+      "turn": 19,
+      "input": "examine torn star chart page",
+      "verb": "examine",
+      "category": "consistent",
+      "dm_action": "allow",
+      "response_preview": "You examine the torn star chart page. A torn page from a rare 17th-century star "
+    },
+    {
+      "turn": 20,
+      "input": "go up",
+      "verb": "go",
+      "category": "consistent",
+      "dm_action": "allow",
+      "response_preview": "**Dome Catwalk Access**\nA narrow metal catwalk encircles the interior of the dom"
+    },
+    {
+      "turn": 21,
+      "input": "go down",
+      "verb": "go",
+      "category": "consistent",
+      "dm_action": "allow",
+      "response_preview": "**Main Observatory Dome** (you've been here before)\nThe colossal dome of the Cel"
+    },
+    {
+      "turn": 22,
+      "input": "go east",
+      "verb": "go",
+      "category": "consistent",
+      "dm_action": "allow",
+      "response_preview": "**West Wing Hallway** (you've been here before)\nThis quieter hallway leads towar"
+    },
+    {
+      "turn": 23,
+      "input": "go east",
+      "verb": "go",
+      "category": "consistent",
+      "dm_action": "allow",
+      "response_preview": "**Staff Common Area** (you've been here before)\nThis spacious lounge offers a br"
+    },
+    {
+      "turn": 24,
+      "input": "go south",
+      "verb": "go",
+      "category": "consistent",
+      "dm_action": "cause",
+      "response_preview": "**Central Access Hallway** (you've been here before)\nThis wide, well-lit hallway"
+    },
+    {
+      "turn": 25,
+      "input": "go east",
+      "verb": "go",
+      "category": "consistent",
+      "dm_action": "allow",
+      "response_preview": "**East Wing Corridor**\nA long, narrow corridor stretching into the eastern wing "
+    },
+    {
+      "turn": 26,
+      "input": "talk to dr. anya sharma",
+      "verb": "talk",
+      "category": "consistent",
+      "dm_action": "allow",
+      "response_preview": "Dr. Anya Sharma answers in a way that fits their manner: Brilliant but extremely"
+    },
+    {
+      "turn": 27,
+      "input": "talk to dr. evelyn reed",
+      "verb": "talk",
+      "category": "consistent",
+      "dm_action": "allow",
+      "response_preview": "Dr. Evelyn Reed answers in a way that fits their manner: Cool and composed, defl"
+    },
+    {
+      "turn": 28,
+      "input": "go north",
+      "verb": "go",
+      "category": "consistent",
+      "dm_action": "allow",
+      "response_preview": "**Dr. Reed's Private Lab**\nA meticulously organized laboratory, filled with comp"
+    },
+    {
+      "turn": 29,
+      "input": "go through hidden_door",
+      "verb": "go",
+      "category": "consistent",
+      "dm_action": "allow",
+      "response_preview": "**Forensics Lab Station**\nA small, sterile room with a stainless steel examinati"
+    },
+    {
+      "turn": 30,
+      "input": "examine tiny puncture mark",
+      "verb": "examine",
+      "category": "consistent",
+      "dm_action": "allow",
+      "response_preview": "You examine the tiny puncture mark. A tiny, almost imperceptible puncture mark o"
+    }
+  ],
+  "dm_log": [],
+  "final_state": {
+    "clues_found": [
+      "clue_04",
+      "clue_02",
+      "clue_06",
+      "clue_01",
+      "clue_03"
+    ],
+    "turns": 31,
+    "won": true,
+    "accommodations": []
+  }
+}

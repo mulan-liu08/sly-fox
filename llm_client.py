@@ -1,3 +1,8 @@
+"""
+llm_client.py — Gemini API wrapper for Phase 2.
+Uses google-genai SDK (not deprecated google.generativeai).
+"""
+
 from __future__ import annotations
 import json
 import re
@@ -6,10 +11,10 @@ from typing import Any
 
 from google import genai
 from google.genai import types
-
 from config import GEMINI_API_KEY
 
 _client = genai.Client(api_key=GEMINI_API_KEY)
+
 
 def _extract_json(text: str) -> Any:
     try:
@@ -23,15 +28,16 @@ def _extract_json(text: str) -> Any:
         match = re.search(r"(\{[\s\S]*\}|\[[\s\S]*\])", cleaned)
         if match:
             return json.loads(match.group(1))
-    raise ValueError(f"Could not extract JSON from response:\n{text[:500]}")
+    raise ValueError(f"Could not extract JSON:\n{text[:400]}")
+
 
 def call_llm(
     prompt: str,
     model_name: str,
     system_instruction: str | None = None,
     expect_json: bool = False,
-    temperature: float = 0.9,
-    max_output_tokens: int = 8192,
+    temperature: float = 0.7,
+    max_output_tokens: int = 10000,
     retries: int = 3,
     retry_delay: float = 2.0,
 ) -> str | Any:
@@ -48,22 +54,19 @@ def call_llm(
     )
 
     for attempt in range(1, retries + 1):
-        time.sleep(2)
         try:
             response = _client.models.generate_content(
                 model=model_name,
                 contents=prompt,
                 config=generate_config,
             )
-            text = response.text.strip()
+            text = response.text.strip() if response.text else ""
+            if not text:
+                raise ValueError("Empty response from model")
             if expect_json:
                 return _extract_json(text)
             return text
-
         except Exception as exc:
             if attempt == retries:
-                raise RuntimeError(
-                    f"Gemini call failed after {retries} attempts: {exc}"
-                ) from exc
-            print(f"  [LLM] attempt {attempt} failed ({exc}), retrying in {retry_delay}s…")
+                raise RuntimeError(f"LLM failed after {retries} attempts: {exc}") from exc
             time.sleep(retry_delay)

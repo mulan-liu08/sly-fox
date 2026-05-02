@@ -1,0 +1,494 @@
+{
+  "crime_state_summary": {
+    "victim": "Dr. Aris Thorne",
+    "culprit": "Dr. Evelyn Reed",
+    "setting": "Celestia Observatory, atop Mount Cinder, remote Sierra Nevada"
+  },
+  "turns": [
+    {
+      "turn": 1,
+      "input": "go east",
+      "verb": "go",
+      "category": "consistent",
+      "dm_action": "allow",
+      "response_preview": "**Grand Observatory Hall**\nThis wide, curving hall leads deeper into the facilit"
+    },
+    {
+      "turn": 2,
+      "input": "to west",
+      "verb": "go",
+      "category": "consistent",
+      "dm_action": "allow",
+      "response_preview": "**Observatory Main Entrance**\nThe heavy steel door hums softly, sealing the obse"
+    },
+    {
+      "turn": 3,
+      "input": "go west",
+      "verb": "go",
+      "category": "consistent",
+      "dm_action": "allow",
+      "response_preview": "**Security Monitoring Station**\nA small, windowless room dominated by a bank of "
+    },
+    {
+      "turn": 4,
+      "input": "go to files",
+      "verb": "go",
+      "category": "consistent",
+      "dm_action": "allow",
+      "response_preview": "**Autopsy Report Files**\nA secure digital archive terminal, displaying a list of"
+    },
+    {
+      "turn": 5,
+      "input": "back to security",
+      "verb": "go",
+      "category": "consistent",
+      "dm_action": "allow",
+      "response_preview": "**Security Monitoring Station** (you've been here before)\nA small, windowless ro"
+    },
+    {
+      "turn": 6,
+      "input": "talk to dr. julian vance",
+      "verb": "talk",
+      "category": "consistent",
+      "dm_action": "allow",
+      "response_preview": "Dr. Julian Vance straightens as if he is back at a lectern, offended but precise"
+    },
+    {
+      "turn": 7,
+      "input": "go north",
+      "verb": "go",
+      "category": "consistent",
+      "dm_action": "allow",
+      "response_preview": "**Maintenance Service Tunnel**\nA narrow, dimly lit tunnel running beneath the ma"
+    },
+    {
+      "turn": 8,
+      "input": "to north",
+      "verb": "go",
+      "category": "consistent",
+      "dm_action": "cause",
+      "response_preview": "**Observatory Storage Room**\nPacked with spare parts, dusty equipment, and forgo"
+    },
+    {
+      "turn": 9,
+      "input": "go south",
+      "verb": "go",
+      "category": "consistent",
+      "dm_action": "allow",
+      "response_preview": "**Maintenance Service Tunnel** (you've been here before)\nA narrow, dimly lit tun"
+    },
+    {
+      "turn": 10,
+      "input": "go to lab back entrance",
+      "verb": "go",
+      "category": "consistent",
+      "dm_action": "allow",
+      "response_preview": "You can't go that way. Available exits: south, north, to_lab_back_entrance."
+    },
+    {
+      "turn": 11,
+      "input": "go to dr. reed's private lab",
+      "verb": "go",
+      "category": "consistent",
+      "dm_action": "allow",
+      "response_preview": "You can't go that way. Available exits: south, north, to_lab_back_entrance."
+    },
+    {
+      "turn": 12,
+      "input": "go to_lab_back_entrance",
+      "verb": "go",
+      "category": "consistent",
+      "dm_action": "allow",
+      "response_preview": "**Dr. Reed's Private Lab**\nA cluttered but organized space, filled with complex "
+    },
+    {
+      "turn": 13,
+      "input": "go to hidden exit",
+      "verb": "go",
+      "category": "consistent",
+      "dm_action": "allow",
+      "response_preview": "You can't go that way. Available exits: west, hidden_exit."
+    },
+    {
+      "turn": 14,
+      "input": "go to hidden_exit",
+      "verb": "go",
+      "category": "consistent",
+      "dm_action": "allow",
+      "response_preview": "**Maintenance Service Tunnel** (you've been here before)\nA narrow, dimly lit tun"
+    },
+    {
+      "turn": 15,
+      "input": "go north",
+      "verb": "go",
+      "category": "consistent",
+      "dm_action": "allow",
+      "response_preview": "**Observatory Storage Room** (you've been here before)\nPacked with spare parts, "
+    },
+    {
+      "turn": 16,
+      "input": "go east",
+      "verb": "go",
+      "category": "consistent",
+      "dm_action": "cause",
+      "response_preview": "**Main Research Corridor**\nA long, sterile corridor lined with various lab doors"
+    },
+    {
+      "turn": 17,
+      "input": "talk to marcus",
+      "verb": "talk",
+      "category": "consistent",
+      "dm_action": "allow",
+      "response_preview": "Marcus \"Mac\" O'Connell squares his shoulders, giving you the facts like an incid"
+    },
+    {
+      "turn": 18,
+      "input": "talk to anya",
+      "verb": "talk",
+      "category": "consistent",
+      "dm_action": "allow",
+      "response_preview": "Dr. Anya Sharma keeps her voice low, fingers worrying at the edge of her sleeve."
+    },
+    {
+      "turn": 19,
+      "input": "talk to evelyn",
+      "verb": "talk",
+      "category": "consistent",
+      "dm_action": "allow",
+      "response_preview": "Dr. Evelyn Reed remains composed, choosing each technical detail with care.\n\"I w"
+    },
+    {
+      "turn": 20,
+      "input": "where can i go",
+      "verb": "go",
+      "category": "consistent",
+      "dm_action": "allow",
+      "response_preview": "Where do you want to go?"
+    },
+    {
+      "turn": 21,
+      "input": "go south",
+      "verb": "go",
+      "category": "consistent",
+      "dm_action": "allow",
+      "response_preview": "**Staff Common Area**\nThis spacious lounge offers a brief respite, with worn cou"
+    },
+    {
+      "turn": 22,
+      "input": "talk to lena",
+      "verb": "talk",
+      "category": "consistent",
+      "dm_action": "allow",
+      "response_preview": "Lena Petrova folds her hands tightly, answering with careful professional contro"
+    },
+    {
+      "turn": 23,
+      "input": "go west",
+      "verb": "go",
+      "category": "consistent",
+      "dm_action": "allow",
+      "response_preview": "**Victim's Research Office**\nThis office is in disarray, papers strewn across th"
+    },
+    {
+      "turn": 24,
+      "input": "examine leather notebook",
+      "verb": "examine",
+      "category": "consistent",
+      "dm_action": "allow",
+      "response_preview": "You examine the leather notebook. A worn notebook with cryptic research notes."
+    },
+    {
+      "turn": 25,
+      "input": "examine cold coffee mug",
+      "verb": "examine",
+      "category": "consistent",
+      "dm_action": "allow",
+      "response_preview": "You examine the cold coffee mug. A half-full mug of cold coffee. Someone was her"
+    },
+    {
+      "turn": 26,
+      "input": "go east",
+      "verb": "go",
+      "category": "consistent",
+      "dm_action": "allow",
+      "response_preview": "**Staff Common Area** (you've been here before)\nThis spacious lounge offers a br"
+    },
+    {
+      "turn": 27,
+      "input": "go east",
+      "verb": "go",
+      "category": "consistent",
+      "dm_action": "allow",
+      "response_preview": "**Grand Observatory Hall** (you've been here before)\nThis wide, curving hall lea"
+    },
+    {
+      "turn": 28,
+      "input": "go east",
+      "verb": "go",
+      "category": "consistent",
+      "dm_action": "allow",
+      "response_preview": "**Thorne's Office Hallway**\nA quieter, more secluded section of the observatory,"
+    },
+    {
+      "turn": 29,
+      "input": "examine lingering aether cologne scent",
+      "verb": "examine",
+      "category": "consistent",
+      "dm_action": "allow",
+      "response_preview": "You examine the lingering Aether cologne scent. A faint, lingering scent of a sp"
+    },
+    {
+      "turn": 30,
+      "input": "go north",
+      "verb": "go",
+      "category": "consistent",
+      "dm_action": "allow",
+      "response_preview": "**Director Thorne's Office**\nA lavish office with panoramic views of the Sierra "
+    },
+    {
+      "turn": 31,
+      "input": "examine fluorescent neurotoxin residue",
+      "verb": "examine",
+      "category": "consistent",
+      "dm_action": "allow",
+      "response_preview": "You examine the fluorescent neurotoxin residue. A microscopic, crystalline resid"
+    },
+    {
+      "turn": 32,
+      "input": "go to computer",
+      "verb": "go",
+      "category": "consistent",
+      "dm_action": "cause",
+      "response_preview": "**Thorne's Encrypted PC**\nA high-security workstation, its screen displaying a c"
+    },
+    {
+      "turn": 33,
+      "input": "examine encrypted journal entry",
+      "verb": "examine",
+      "category": "consistent",
+      "dm_action": "allow",
+      "response_preview": "You examine the encrypted journal entry. A cryptic entry in Thorne's encrypted d"
+    },
+    {
+      "turn": 34,
+      "input": "case",
+      "verb": "case",
+      "category": "consistent",
+      "dm_action": "allow",
+      "response_preview": "Detective's case board\n\nEvidence logged:\n1. lingering Aether cologne scent \u2014 cir"
+    },
+    {
+      "turn": 35,
+      "input": "go west",
+      "verb": "go",
+      "category": "consistent",
+      "dm_action": "allow",
+      "response_preview": "You can't go that way. Available exits: back_to_office."
+    },
+    {
+      "turn": 36,
+      "input": "go back to office",
+      "verb": "go",
+      "category": "consistent",
+      "dm_action": "allow",
+      "response_preview": "You can't go that way. Available exits: back_to_office."
+    },
+    {
+      "turn": 37,
+      "input": "back to office",
+      "verb": "go",
+      "category": "consistent",
+      "dm_action": "allow",
+      "response_preview": "**Director Thorne's Office** (you've been here before)\nA lavish office with pano"
+    },
+    {
+      "turn": 38,
+      "input": "go south",
+      "verb": "go",
+      "category": "consistent",
+      "dm_action": "allow",
+      "response_preview": "**Thorne's Office Hallway** (you've been here before)\nA quieter, more secluded s"
+    },
+    {
+      "turn": 39,
+      "input": "go west",
+      "verb": "go",
+      "category": "consistent",
+      "dm_action": "allow",
+      "response_preview": "**Grand Observatory Hall** (you've been here before)\nThis wide, curving hall lea"
+    },
+    {
+      "turn": 40,
+      "input": "go southwest",
+      "verb": "go",
+      "category": "consistent",
+      "dm_action": "cause",
+      "response_preview": "**Observatory Main Entrance** (you've been here before)\nThe heavy steel door hum"
+    },
+    {
+      "turn": 41,
+      "input": "go north",
+      "verb": "go",
+      "category": "consistent",
+      "dm_action": "allow",
+      "response_preview": "**Staff Common Area** (you've been here before)\nThis spacious lounge offers a br"
+    },
+    {
+      "turn": 42,
+      "input": "go north",
+      "verb": "go",
+      "category": "consistent",
+      "dm_action": "allow",
+      "response_preview": "**Main Research Corridor** (you've been here before)\nA long, sterile corridor li"
+    },
+    {
+      "turn": 43,
+      "input": "go east",
+      "verb": "go",
+      "category": "consistent",
+      "dm_action": "allow",
+      "response_preview": "**Dr. Reed's Private Lab** (you've been here before)\nA cluttered but organized s"
+    },
+    {
+      "turn": 44,
+      "input": "go west",
+      "verb": "go",
+      "category": "consistent",
+      "dm_action": "allow",
+      "response_preview": "**Main Research Corridor** (you've been here before)\nA long, sterile corridor li"
+    },
+    {
+      "turn": 45,
+      "input": "go west",
+      "verb": "go",
+      "category": "consistent",
+      "dm_action": "allow",
+      "response_preview": "**Observatory Storage Room** (you've been here before)\nPacked with spare parts, "
+    },
+    {
+      "turn": 46,
+      "input": "go south",
+      "verb": "go",
+      "category": "consistent",
+      "dm_action": "allow",
+      "response_preview": "**Maintenance Service Tunnel** (you've been here before)\nA narrow, dimly lit tun"
+    },
+    {
+      "turn": 47,
+      "input": "go south",
+      "verb": "go",
+      "category": "consistent",
+      "dm_action": "allow",
+      "response_preview": "**Security Monitoring Station** (you've been here before)\nA small, windowless ro"
+    },
+    {
+      "turn": 48,
+      "input": "go to files",
+      "verb": "go",
+      "category": "consistent",
+      "dm_action": "cause",
+      "response_preview": "**Autopsy Report Files** (you've been here before)\nA secure digital archive term"
+    },
+    {
+      "turn": 49,
+      "input": "examine tiny puncture mark",
+      "verb": "examine",
+      "category": "consistent",
+      "dm_action": "allow",
+      "response_preview": "You examine the tiny puncture mark. A tiny, almost imperceptible puncture mark o"
+    },
+    {
+      "turn": 50,
+      "input": "go back",
+      "verb": "go",
+      "category": "consistent",
+      "dm_action": "allow",
+      "response_preview": "**Security Monitoring Station** (you've been here before)\nA small, windowless ro"
+    },
+    {
+      "turn": 51,
+      "input": "go north",
+      "verb": "go",
+      "category": "consistent",
+      "dm_action": "allow",
+      "response_preview": "**Maintenance Service Tunnel** (you've been here before)\nA narrow, dimly lit tun"
+    },
+    {
+      "turn": 52,
+      "input": "go to lab back entrance",
+      "verb": "go",
+      "category": "consistent",
+      "dm_action": "allow",
+      "response_preview": "You can't go that way. Available exits: south, north, to_lab_back_entrance."
+    },
+    {
+      "turn": 53,
+      "input": "to lab back entrance",
+      "verb": "unknown",
+      "category": "consistent",
+      "dm_action": "allow",
+      "response_preview": "You consider trying to 'to lab back entrance' but aren't sure how."
+    },
+    {
+      "turn": 54,
+      "input": "go to dr. reed's private lab",
+      "verb": "go",
+      "category": "consistent",
+      "dm_action": "allow",
+      "response_preview": "You can't go that way. Available exits: south, north, to_lab_back_entrance."
+    },
+    {
+      "turn": 55,
+      "input": "go to_lab_back_entrance",
+      "verb": "go",
+      "category": "consistent",
+      "dm_action": "allow",
+      "response_preview": "**Dr. Reed's Private Lab** (you've been here before)\nA cluttered but organized s"
+    },
+    {
+      "turn": 56,
+      "input": "examine modified air canister and nozzle",
+      "verb": "examine",
+      "category": "consistent",
+      "dm_action": "allow",
+      "response_preview": "You examine the modified air canister and nozzle. A custom-machined nozzle and a"
+    },
+    {
+      "turn": 57,
+      "input": "accuse dr. anya sharma",
+      "verb": "accuse",
+      "category": "consistent",
+      "dm_action": "allow",
+      "response_preview": "You accuse Dr. Anya Sharma, but the evidence does not hold together.\nThe weak po"
+    },
+    {
+      "turn": 58,
+      "input": "case",
+      "verb": "case",
+      "category": "consistent",
+      "dm_action": "allow",
+      "response_preview": "Detective's case board\n\nEvidence logged:\n1. lingering Aether cologne scent \u2014 cir"
+    },
+    {
+      "turn": 59,
+      "input": "accuse marcus",
+      "verb": "accuse",
+      "category": "consistent",
+      "dm_action": "allow",
+      "response_preview": "You accuse Marcus \"Mac\" O'Connell, but the evidence does not hold together.\nThe "
+    }
+  ],
+  "dm_log": [],
+  "final_state": {
+    "clues_found": [
+      "clue_04",
+      "clue_02",
+      "clue_06",
+      "clue_03",
+      "clue_05"
+    ],
+    "turns": 60,
+    "won": true,
+    "accommodations": []
+  }
+}

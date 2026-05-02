@@ -1,0 +1,162 @@
+{
+  "crime_state_summary": {
+    "victim": "Dr. Aris Thorne",
+    "culprit": "Dr. Evelyn Reed",
+    "setting": "Celestia Observatory, atop Mount Cinder, remote Sierra Nevada"
+  },
+  "turns": [
+    {
+      "turn": 1,
+      "input": "pick up the keycard",
+      "verb": "take",
+      "category": "consistent",
+      "dm_action": "allow",
+      "response_preview": "You take the security keycard and slip it into your coat pocket. It is now in yo"
+    },
+    {
+      "turn": 2,
+      "input": "go to security office",
+      "verb": "go",
+      "category": "consistent",
+      "dm_action": "allow",
+      "response_preview": "**Observatory Security Office** (you've been here before)\nMultiple monitors disp"
+    },
+    {
+      "turn": 3,
+      "input": "talk to dr julian vance",
+      "verb": "talk",
+      "category": "consistent",
+      "dm_action": "allow",
+      "response_preview": "You don't see 'dr julian vance' here to talk to."
+    },
+    {
+      "turn": 4,
+      "input": "talk to dr_julian_vance",
+      "verb": "talk",
+      "category": "consistent",
+      "dm_action": "hint",
+      "response_preview": "They meet your gaze and respond guardedly."
+    },
+    {
+      "turn": 5,
+      "input": "where is the victim's personal office?",
+      "verb": "ask",
+      "category": "consistent",
+      "dm_action": "allow",
+      "response_preview": "You don't see 'victim's personal office' here to talk to."
+    },
+    {
+      "turn": 6,
+      "input": "talk to marcus_mac_oconnell",
+      "verb": "talk",
+      "category": "consistent",
+      "dm_action": "allow",
+      "response_preview": "They meet your gaze and respond guardedly."
+    },
+    {
+      "turn": 7,
+      "input": "go to storage room",
+      "verb": "go",
+      "category": "consistent",
+      "dm_action": "allow",
+      "response_preview": "**Observatory Storage Room** (you've been here before)\nShelves packed with spare"
+    },
+    {
+      "turn": 8,
+      "input": "go to staff lounge",
+      "verb": "go",
+      "category": "consistent",
+      "dm_action": "hint",
+      "response_preview": "**Observatory Staff Lounge** (you've been here before)\nA small, cozy room with a"
+    },
+    {
+      "turn": 9,
+      "input": "go to common area",
+      "verb": "go",
+      "category": "consistent",
+      "dm_action": "allow",
+      "response_preview": "**Staff Common Area** (you've been here before)\nThis spacious room serves as a c"
+    },
+    {
+      "turn": 10,
+      "input": "talk to lena_petrova",
+      "verb": "talk",
+      "category": "consistent",
+      "dm_action": "allow",
+      "response_preview": "They meet your gaze and respond guardedly."
+    },
+    {
+      "turn": 11,
+      "input": "go to corridor",
+      "verb": "go",
+      "category": "consistent",
+      "dm_action": "allow",
+      "response_preview": "**Connecting Staff Corridor** (you've been here before)\nA utilitarian corridor w"
+    },
+    {
+      "turn": 12,
+      "input": "go to victim_office",
+      "verb": "go",
+      "category": "consistent",
+      "dm_action": "hint",
+      "response_preview": "**Victim's Personal Office** (you've been here before)\nThis office is meticulous"
+    },
+    {
+      "turn": 13,
+      "input": "examine_desk",
+      "verb": "examine",
+      "category": "consistent",
+      "dm_action": "allow",
+      "response_preview": "You don't see 'desk' here."
+    },
+    {
+      "turn": 14,
+      "input": "go to examine_desk",
+      "verb": "go",
+      "category": "consistent",
+      "dm_action": "allow",
+      "response_preview": "**Autopsy Report File** (you've been here before)\nThis is a detailed, confidenti"
+    },
+    {
+      "turn": 15,
+      "input": "go back",
+      "verb": "go",
+      "category": "consistent",
+      "dm_action": "allow",
+      "response_preview": "**Victim's Personal Office** (you've been here before)\nThis office is meticulous"
+    },
+    {
+      "turn": 16,
+      "input": "go to corridor",
+      "verb": "go",
+      "category": "consistent",
+      "dm_action": "hint",
+      "response_preview": "**Connecting Staff Corridor** (you've been here before)\nA utilitarian corridor w"
+    },
+    {
+      "turn": 17,
+      "input": "go east",
+      "verb": "go",
+      "category": "consistent",
+      "dm_action": "allow",
+      "response_preview": "**Thorne's Office Hallway** (you've been here before)\nThis section of the corrid"
+    },
+    {
+      "turn": 18,
+      "input": "examine clue_04",
+      "verb": "examine",
+      "category": "consistent",
+      "dm_action": "allow",
+      "response_preview": "You examine it carefully, noting every detail."
+    }
+  ],
+  "dm_log": [],
+  "final_state": {
+    "clues_found": [
+      "clue_04"
+    ],
+    "turns": 19,
+    "won": false,
+    "accommodations": []
+  }
+}
