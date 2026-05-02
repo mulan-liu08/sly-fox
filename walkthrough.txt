@@ -26,24 +26,25 @@ Game world ready.
 
   You arrive at the scene. The place is eerily quiet.
 
-  **Manor Grand Entrance**
-  The heavy oak doors stand ajar, revealing a vast, echoing foyer. Dust
-  motes dance in the faint light filtering through stained-glass panels.
-  Exits: north → Spacious Common Area, east → Dimly Lit Corridor
+  **Grand Entrance Hall**
+  The imposing entrance hall of Blackwood Manor, echoing with forgotten
+  footsteps. A grand staircase ascends into shadow, and heavy oak doors
+  lead further into the estate.
+  Exits: east → Manor's Common Area, up → Grand Staircase Landing
   Objects here: brass house key
   People here: no one
 
 
 ────────────────────────────────────────
 
-  > go north
+  > go east
   ...
-  **Spacious Common Area**
-  A sprawling room with plush, antique furniture arranged around a cold
-  fireplace. Portraits of stern-faced ancestors gaze down from the
-  walls.
-  Exits: south → Manor Grand Entrance, west → Grand Marble Staircase,
-  east → Dimly Lit Corridor
+  **Manor's Common Area**
+  A spacious lounge, once vibrant, now feels heavy with unspoken
+  secrets. Dust motes dance in the faint light from tall windows
+  overlooking overgrown gardens.
+  Exits: west → Grand Entrance Hall, north → Dusty Main Corridor, east →
+  Library Eleanor's Desk
   Objects here: nothing of note
   People here: Lady Beatrice Finch (Lord Finch's Estranged Wife)
 
@@ -62,171 +63,16 @@ Game world ready.
 
 ────────────────────────────────────────
 
-  > go west
-  ...
-  **Grand Marble Staircase**
-  A sweeping staircase with an ornate wrought-iron banister. It ascends
-  gracefully to the upper floors, shrouded in a perpetual twilight.
-  Exits: east → Spacious Common Area, up → Upper Floor Landing
-  Objects here: nothing of note
-  People here: no one
-
-────────────────────────────────────────
-
-  > go up
-  ...
-  **Upper Floor Landing**
-  A spacious landing overlooking the grand entrance below. Several doors
-  lead off into the manor's private quarters.
-  Exits: down → Grand Marble Staircase, north → Eleanor Vance's Library
-  Desk, east → Lady Beatrice's Sitting Room, west → Dr. Thorne's Guest
-  Room
-  Objects here: nothing of note
-  People here: no one
-
-────────────────────────────────────────
-
   > go north
   ...
-  **Eleanor Vance's Library Desk**
-  This vast library is filled with ancient tomes and the scent of aged
-  paper. Eleanor Vance's desk, meticulously organized, sits by a tall
-  window.
-  Exits: south → Upper Floor Landing
+  **Dusty Main Corridor**
+  A long, winding corridor lined with faded portraits of stern-faced
+  ancestors. The air is still and carries a faint scent of old wood and
+  dust.
+  Exits: south → Manor's Common Area, west → Dim Security Office, east →
+  Victim's Private Office, north → Back Corridor Near Study
   Objects here: nothing of note
-  People here: no one
-
-────────────────────────────────────────
-
-  > go south
-  ...
-  **Upper Floor Landing** (you've been here before)
-  A spacious landing overlooking the grand entrance below. Several doors
-  lead off into the manor's private quarters.
-  Exits: down → Grand Marble Staircase, north → Eleanor Vance's Library
-  Desk, east → Lady Beatrice's Sitting Room, west → Dr. Thorne's Guest
-  Room
-  Objects here: nothing of note
-  People here: no one
-
-────────────────────────────────────────
-
-  > go east
-  ...
-  **Lady Beatrice's Sitting Room**
-  A delicate room adorned with floral patterns and lace. A half-finished
-  embroidery project lies on a chaise lounge, hinting at recent
-  occupation.
-  Exits: west → Upper Floor Landing
-  Objects here: heavily annotated copy
-  People here: no one
-
-────────────────────────────────────────
-
-  > examine heavily annotated copy
-  ...
-  You examine the heavily annotated copy. A heavily annotated copy of
-  Lord Byron's 'Manfred' in Lady Beatrice's private sitting room, with
-  several passages about revenge, suffering, and freedom from tyranny
-  underlined and marginalia expressing strong agreement.
-  At first glance, the evidence directly names or references lady
-  beatrice finch, though further investigation will show there is an
-  innocent explanation.
-
-EVIDENCE LOGGED: heavily annotated copy
-     A heavily annotated copy of Lord Byron's 'Manfred' in Lady
-     Beatrice's private sitting room, with several passages about
-     revenge, suffering, and freedom from tyranny underlined and
-     marginalia expressing strong agreement.
-     Clues found: 1 | Need 2 more to make accusation
-
-────────────────────────────────────────
-
-  > go west
-  ...
-  **Upper Floor Landing** (you've been here before)
-  A spacious landing overlooking the grand entrance below. Several doors
-  lead off into the manor's private quarters.
-  Exits: down → Grand Marble Staircase, north → Eleanor Vance's Library
-  Desk, east → Lady Beatrice's Sitting Room, west → Dr. Thorne's Guest
-  Room
-  Objects here: nothing of note
-  People here: no one
-
-────────────────────────────────────────
-
-  > go west
-  ...
-  **Dr. Thorne's Guest Room**
-  A comfortable, if somewhat impersonal, guest room. A neatly packed
-  medical bag rests on the bedside table, ready for any emergency.
-  Exits: east → Upper Floor Landing
-  Objects here: nothing of note
-  People here: no one
-
-────────────────────────────────────────
-
-  > to east
-  ...
-  **Upper Floor Landing** (you've been here before)
-  A spacious landing overlooking the grand entrance below. Several doors
-  lead off into the manor's private quarters.
-  Exits: down → Grand Marble Staircase, north → Eleanor Vance's Library
-  Desk, east → Lady Beatrice's Sitting Room, west → Dr. Thorne's Guest
-  Room
-  Objects here: nothing of note
-  People here: no one
-
-────────────────────────────────────────
-
-  > go down
-  ...
-  **Grand Marble Staircase** (you've been here before)
-  A sweeping staircase with an ornate wrought-iron banister. It ascends
-  gracefully to the upper floors, shrouded in a perpetual twilight.
-  Exits: east → Spacious Common Area, up → Upper Floor Landing
-  Objects here: nothing of note
-  People here: no one
-
-────────────────────────────────────────
-
-  > go east
-  ...
-  **Spacious Common Area** (you've been here before)
-  A sprawling room with plush, antique furniture arranged around a cold
-  fireplace. Portraits of stern-faced ancestors gaze down from the
-  walls.
-  Exits: south → Manor Grand Entrance, west → Grand Marble Staircase,
-  east → Dimly Lit Corridor
-  Objects here: nothing of note
-  People here: Lady Beatrice Finch (Lord Finch's Estranged Wife)
-
-────────────────────────────────────────
-
-  > go east
-  ...
-  **Dimly Lit Corridor**
-  This narrow hallway is lined with faded wallpaper and creaking
-  floorboards. Shadows cling to the corners, hinting at forgotten
-  secrets.
-  Exits: west → Manor Grand Entrance, north → Spacious Common Area, east
-  → Security Office, south → Back Corridor Study Entrance
-  Objects here: nothing of note
-  People here: Arthur Davies (Lord Finch's Head Butler), Eleanor Vance
-  (Researcher)
-
-────────────────────────────────────────
-
-  > talk to arthur
-  ...
-  Arthur Davies answers after a guarded pause.
-  "I was serving refreshments in the drawing-room, then in the kitchen
-  preparing for the guests' departure, and was the one who discovered
-  Lord Finch's body. my movements were largely observed by guests."
-  Arthur Davies adds, "My connection to Lord Finch: Loyal, long-serving
-  employee of the Finch family for over thirty years."
-  Arthur Davies adds, "If you doubt me, find a concrete reason I would
-  want Lord Finch dead. Without motive, suspicion is only noise."
+  People here: Eleanor Vance (Researcher)
 
 ────────────────────────────────────────
 
@@ -243,25 +89,100 @@ EVIDENCE LOGGED: heavily annotated copy
 
 ────────────────────────────────────────
 
-  > go south
+  > go east
   ...
-  **Back Corridor Study Entrance**
-  A less-traveled, utilitarian corridor leading deeper into the manor's
-  private wings. The air here is noticeably cooler.
-  Exits: north → Dimly Lit Corridor, west → Victim's Private Office,
-  east → Under Lord Finch's Desk
-  Objects here: nothing of note
+  **Victim's Private Office**
+  This office feels recently disturbed, papers scattered across the desk
+  and a chair overturned. A chill permeates the air, hinting at a recent
+  struggle.
+  Exits: west → Dusty Main Corridor
+  Objects here: cold drink cup
   People here: no one
+
+────────────────────────────────────────
+
+  > examine cold drink cup
+  ...
+  You examine the cold drink cup. An abandoned cup, long cold. Someone
+  was here recently.
+
+────────────────────────────────────────
+
+  > go west
+  ...
+  **Dusty Main Corridor** (you've been here before)
+  A long, winding corridor lined with faded portraits of stern-faced
+  ancestors. The air is still and carries a faint scent of old wood and
+  dust.
+  Exits: south → Manor's Common Area, west → Dim Security Office, east →
+  Victim's Private Office, north → Back Corridor Near Study
+  Objects here: nothing of note
+  People here: Eleanor Vance (Researcher)
+
+────────────────────────────────────────
+
+  > go west
+  ...
+  **Dim Security Office**
+  A small, cluttered room filled with outdated surveillance equipment.
+  Monitors flicker with static, casting an eerie glow on forgotten
+  files.
+  Exits: east → Dusty Main Corridor
+  Objects here: nothing of note
+  People here: Dr. Elias Thorne (Lord Finch's Personal Physician)
+
+    *Next lead: go east, then go north, then go north to reach Lord
+  Finch's Study Entrance, then examine the small ornate silver locket.*
+
+────────────────────────────────────────
+
+  > talk to dr. elias
+  ...
+  Dr. Elias Thorne answers quietly, choosing each word with visible
+  care.
+  "I was playing cards with Lady Beatrice and Mr. Davies in the drawing-
+  room from 9."
+  Dr. Elias Thorne adds, "My connection to Lord Finch: Long-time
+  confidant and medical advisor, though often at odds with Finch's
+  demanding nature."
+  Dr. Elias Thorne adds, "If you doubt me, check the timing. If I could
+  not reach Lord Finch during the critical window, the theory falls
+  apart."
 
 ────────────────────────────────────────
 
   > go east
   ...
-  **Under Lord Finch's Desk**
-  A cramped, dusty space beneath the heavy oak desk. The air is stale,
-  and a forgotten ledger lies half-hidden in the shadows.
-  Exits: up → Lord Finch's Study Decanter, west → Back Corridor Study
+  **Dusty Main Corridor** (you've been here before)
+  A long, winding corridor lined with faded portraits of stern-faced
+  ancestors. The air is still and carries a faint scent of old wood and
+  dust.
+  Exits: south → Manor's Common Area, west → Dim Security Office, east →
+  Victim's Private Office, north → Back Corridor Near Study
+  Objects here: nothing of note
+  People here: Eleanor Vance (Researcher)
+
+────────────────────────────────────────
+
+  > go north
+  ...
+  **Back Corridor Near Study**
+  A narrow, less-used corridor at the rear of the manor, away from the
+  main thoroughfares. The floorboards creak ominously with every step.
+  Exits: south → Dusty Main Corridor, north → Lord Finch's Study
   Entrance
+  Objects here: nothing of note
+  People here: no one
+
+────────────────────────────────────────
+
+  > go north
+  ...
+  **Lord Finch's Study Entrance**
+  The grand study of Lord Finch, filled with leather-bound books and a
+  heavy oak desk. A faint scent of brandy lingers in the air, and a
+  large, ornate decanter sits prominently.
+  Exits: south → Back Corridor Near Study
   Objects here: small ornate silver locket
   People here: no one
 
@@ -281,28 +202,14 @@ EVIDENCE LOGGED: small ornate silver locket
      hidden under Lord Finch's study desk. Inside, it contains a faded
      photograph of a young girl and a tiny, almost illegible
      inscription: 'E.V.'
-     Clues found: 2 | Need 1 more to make accusation
+     Clues found: 1 | Need 2 more to make accusation
 
 ────────────────────────────────────────
 
-  > accuse eleanor vance
+  > destroy the silver locket
   ...
-  You are not ready to make an accusation yet. You have 2 clue(s), but
-  you need 3. Use HINT for the next lead, or CASE / SUSPECTS to review
-  what you know so far.
-
-────────────────────────────────────────
-
-  > destroy the locket
-  ...
-  You consider trying to 'destroy the locket' but aren't sure how.
-
-────────────────────────────────────────
-
-  > jump up and down
-  ...
-  From here, you can go up to Lord Finch's Study Decanter; west to Back
-  Corridor Study Entrance.
+  You consider trying to 'destroy the silver locket' but aren't sure
+  how.
 
 ────────────────────────────────────────
 
@@ -310,60 +217,71 @@ EVIDENCE LOGGED: small ornate silver locket
   ...
   Time passes. The hum of the facility continues.
 
-    *Something tells you there may be more to discover in the Inside
-  Medical Bag.*
+────────────────────────────────────────
+
+  > accuse eleanor vance
+  ...
+  You are not ready to make an accusation yet. You have 1 clue(s), but
+  you need 3. Use HINT for the next lead, or CASE / SUSPECTS to review
+  what you know so far.
+
+    *Next lead: go south, then go south, then go south, then go west,
+  then go up, then go north, then go west, then go open bag to reach Dr.
+  Thorne's Medical Bag, then examine the half-empty bottle of Chloral
+  Hydrate.*
 
 ────────────────────────────────────────
 
-  > hint
+  > go south
   ...
-  Next lead: go west, then go north, then go north, then go west, then
-  go up, then go west, then go examine bag to reach Inside Medical Bag,
-  then examine the half-empty bottle of Chloral Hydrate.
-
-────────────────────────────────────────
-
-  > go wesst
-  ...
-  You can't go that way. From here, you can go up to Lord Finch's Study
-  Decanter; west to Back Corridor Study Entrance.
-
-────────────────────────────────────────
-
-  > go west
-  ...
-  **Back Corridor Study Entrance** (you've been here before)
-  A less-traveled, utilitarian corridor leading deeper into the manor's
-  private wings. The air here is noticeably cooler.
-  Exits: north → Dimly Lit Corridor, west → Victim's Private Office,
-  east → Under Lord Finch's Desk
+  **Back Corridor Near Study** (you've been here before)
+  A narrow, less-used corridor at the rear of the manor, away from the
+  main thoroughfares. The floorboards creak ominously with every step.
+  Exits: south → Dusty Main Corridor, north → Lord Finch's Study
+  Entrance
   Objects here: faint sweet almond-like scent lingering
   People here: no one
 
 ────────────────────────────────────────
 
-  > go north
+  > notice faint sweet almond-like scent lingering
   ...
-  **Dimly Lit Corridor** (you've been here before)
-  This narrow hallway is lined with faded wallpaper and creaking
-  floorboards. Shadows cling to the corners, hinting at forgotten
-  secrets.
-  Exits: west → Manor Grand Entrance, north → Spacious Common Area, east
-  → Security Office, south → Back Corridor Study Entrance
-  Objects here: nothing of note
-  People here: Arthur Davies (Lord Finch's Head Butler), Eleanor Vance
-  (Researcher)
+  You examine the faint sweet almond-like scent lingering. A faint,
+  sweet almond-like scent lingering on a discarded, embroidered
+  handkerchief found near the study's back entrance. This scent is
+  characteristic of Belladonna.
+  This connects to how Lord Finch died. It is consistent with Eleanor
+  Vance's method and is worth comparing against their alibi.
+
+EVIDENCE LOGGED: faint sweet almond-like scent lingering
+     A faint, sweet almond-like scent lingering on a discarded,
+     embroidered handkerchief found near the study's back entrance. This
+     scent is characteristic of Belladonna.
+     Clues found: 2 | Need 1 more to make accusation
 
 ────────────────────────────────────────
 
-  > go north
+  > go south
   ...
-  **Spacious Common Area** (you've been here before)
-  A sprawling room with plush, antique furniture arranged around a cold
-  fireplace. Portraits of stern-faced ancestors gaze down from the
-  walls.
-  Exits: south → Manor Grand Entrance, west → Grand Marble Staircase,
-  east → Dimly Lit Corridor
+  **Dusty Main Corridor** (you've been here before)
+  A long, winding corridor lined with faded portraits of stern-faced
+  ancestors. The air is still and carries a faint scent of old wood and
+  dust.
+  Exits: south → Manor's Common Area, west → Dim Security Office, east →
+  Victim's Private Office, north → Back Corridor Near Study
+  Objects here: nothing of note
+  People here: Eleanor Vance (Researcher)
+
+────────────────────────────────────────
+
+  > go south
+  ...
+  **Manor's Common Area** (you've been here before)
+  A spacious lounge, once vibrant, now feels heavy with unspoken
+  secrets. Dust motes dance in the faint light from tall windows
+  overlooking overgrown gardens.
+  Exits: west → Grand Entrance Hall, north → Dusty Main Corridor, east →
+  Library Eleanor's Desk
   Objects here: nothing of note
   People here: Lady Beatrice Finch (Lord Finch's Estranged Wife)
 
@@ -371,46 +289,96 @@ EVIDENCE LOGGED: small ornate silver locket
 
   > go west
   ...
-  **Grand Marble Staircase** (you've been here before)
-  A sweeping staircase with an ornate wrought-iron banister. It ascends
-  gracefully to the upper floors, shrouded in a perpetual twilight.
-  Exits: east → Spacious Common Area, up → Upper Floor Landing
-  Objects here: nothing of note
+  **Grand Entrance Hall**
+  The imposing entrance hall of Blackwood Manor, echoing with forgotten
+  footsteps. A grand staircase ascends into shadow, and heavy oak doors
+  lead further into the estate.
+  Exits: east → Manor's Common Area, up → Grand Staircase Landing
+  Objects here: brass house key
   People here: no one
 
 ────────────────────────────────────────
 
   > go up
   ...
-  **Upper Floor Landing** (you've been here before)
-  A spacious landing overlooking the grand entrance below. Several doors
-  lead off into the manor's private quarters.
-  Exits: down → Grand Marble Staircase, north → Eleanor Vance's Library
-  Desk, east → Lady Beatrice's Sitting Room, west → Dr. Thorne's Guest
-  Room
+  **Grand Staircase Landing**
+  The ornate grand staircase ascends to a landing, adorned with a large,
+  dusty tapestry depicting a hunting scene. A sense of faded grandeur
+  lingers here, with doors leading off to upper chambers.
+  Exits: down → Grand Entrance Hall, north → Upper Manor Hallway
   Objects here: nothing of note
   People here: no one
+
+────────────────────────────────────────
+
+  > go north
+  ...
+  **Upper Manor Hallway**
+  A quiet, carpeted hallway on an upper floor, lined with closed doors.
+  The air is still, and faint light filters in from unseen windows.
+  Exits: south → Grand Staircase Landing, east → Lady Beatrice's Sitting
+  Room, west → Dr. Thorne's Guest Room
+  Objects here: nothing of note
+  People here: Arthur Davies (Lord Finch's Head Butler)
+
+────────────────────────────────────────
+
+  > talk to arthur
+  ...
+  Arthur Davies answers after a guarded pause.
+  "I was serving refreshments in the drawing-room, then in the kitchen
+  preparing for the guests' departure, and was the one who discovered
+  Lord Finch's body. my movements were largely observed by guests."
+  Arthur Davies adds, "My connection to Lord Finch: Loyal, long-serving
+  employee of the Finch family for over thirty years."
+  Arthur Davies adds, "If you doubt me, find a concrete reason I would
+  want Lord Finch dead. Without motive, suspicion is only noise."
+
+────────────────────────────────────────
+
+  > go west
+  ...
+  **Dr. Thorne's Guest Room**
+  A sparsely furnished guest room, neat but impersonal, with a single
+  window overlooking the manor grounds. A worn leather medical bag sits
+  on a small bedside table.
+  Exits: east → Upper Manor Hallway
+  Objects here: nothing of note
+  People here: no one
+
+────────────────────────────────────────
+
+  > go east
+  ...
+  **Upper Manor Hallway** (you've been here before)
+  A quiet, carpeted hallway on an upper floor, lined with closed doors.
+  The air is still, and faint light filters in from unseen windows.
+  Exits: south → Grand Staircase Landing, east → Lady Beatrice's Sitting
+  Room, west → Dr. Thorne's Guest Room
+  Objects here: nothing of note
+  People here: Arthur Davies (Lord Finch's Head Butler)
 
 ────────────────────────────────────────
 
   > go west
   ...
   **Dr. Thorne's Guest Room** (you've been here before)
-  A comfortable, if somewhat impersonal, guest room. A neatly packed
-  medical bag rests on the bedside table, ready for any emergency.
-  Exits: east → Upper Floor Landing
+  A sparsely furnished guest room, neat but impersonal, with a single
+  window overlooking the manor grounds. A worn leather medical bag sits
+  on a small bedside table.
+  Exits: east → Upper Manor Hallway
   Objects here: nothing of note
   People here: no one
 
 ────────────────────────────────────────
 
-  > examine bag
+  > examine medical bag
   ...
-  **Inside Medical Bag**
-  You are now inside Dr. Thorne's medical bag. It's surprisingly
-  spacious, filled with an array of instruments and vials. The scent of
-  antiseptic is strong.
-  Exits: exit bag → Dr. Thorne's Guest Room
+  **Dr. Thorne's Medical Bag**
+  Inside Dr. Thorne's worn leather medical bag, a jumble of instruments,
+  vials, and neatly folded bandages. The faint scent of antiseptic hangs
+  in the air.
+  Exits: close bag → Dr. Thorne's Guest Room
   Objects here: half-empty bottle of Chloral Hydrate
   People here: no one
 
@@ -435,45 +403,23 @@ EVIDENCE LOGGED: half-empty bottle of Chloral Hydrate
 
 ────────────────────────────────────────
 
-  > suspects
-  ...
-  Suspect board:
-  - Eleanor Vance (interviewed): suspicion 3/5 — small ornate silver
-  locket fits the hidden method or motive connected to Eleanor Vance;
-  has a complete means/motive/opportunity profile.
-  - Dr. Elias Thorne (not interviewed): suspicion 2/5 — half-empty
-  bottle of Chloral Hydrate raises questions about this suspect; half-
-  empty bottle of Chloral Hydrate names or implies this suspect.
-  - Lady Beatrice Finch (interviewed): suspicion 2/5 — heavily annotated
-  copy raises questions about this suspect; heavily annotated copy names
-  or implies this suspect.
-  - Arthur Davies (interviewed): suspicion 0/5 — no direct evidence
-  logged yet.
-
-  You have enough evidence to accuse. Strongest current lead: Eleanor
-  Vance.
-  Try: accuse Eleanor Vance
-
-────────────────────────────────────────
-
   > case
   ...
   Detective's case board
 
   Evidence logged:
-  1. heavily annotated copy — circumstantial lead. A heavily annotated
-  copy of Lord Byron's 'Manfred' in Lady Beatrice's private sitting
-  room, with several passages about revenge, suffering, and freedom from
-  tyranny underlined and marginalia expressing strong agreement. The
-  evidence directly names or references Lady Beatrice Finch, though
-  further investigation will show this is circumstantial. What appears
-  to implicate them has an innocent explanation.
-  2. small ornate silver locket — strong case evidence. A small, ornate
+  1. small ornate silver locket — strong case evidence. A small, ornate
   silver locket, slightly tarnished, found partially hidden under Lord
   Finch's study desk. Inside, it contains a faded photograph of a young
   girl and a tiny, almost illegible inscription: 'E.V.' This connects to
   how Lord Finch was killed: it is consistent with Eleanor Vance's
   method and warrants closer scrutiny of their access.
+  2. faint sweet almond-like scent lingering — strong case evidence. A
+  faint, sweet almond-like scent lingering on a discarded, embroidered
+  handkerchief found near the study's back entrance. This scent is
+  characteristic of Belladonna. This connects to how Lord Finch was
+  killed: it is consistent with Eleanor Vance's method and warrants
+  closer scrutiny of their access.
   3. half-empty bottle of Chloral Hydrate — circumstantial lead. A half-
   empty bottle of Chloral Hydrate, a potent sedative, found in Dr.
   Thorne's medical bag, along with a syringe. The evidence directly
@@ -482,15 +428,180 @@ EVIDENCE LOGGED: half-empty bottle of Chloral Hydrate
   an innocent explanation.
 
   Suspect board:
-  - Eleanor Vance (interviewed): suspicion 3/5 — small ornate silver
+  - Eleanor Vance (interviewed): suspicion 5/5 — small ornate silver
   locket fits the hidden method or motive connected to Eleanor Vance;
-  has a complete means/motive/opportunity profile.
-  - Dr. Elias Thorne (not interviewed): suspicion 2/5 — half-empty
-  bottle of Chloral Hydrate raises questions about this suspect; half-
-  empty bottle of Chloral Hydrate names or implies this suspect.
-  - Lady Beatrice Finch (interviewed): suspicion 2/5 — heavily annotated
-  copy raises questions about this suspect; heavily annotated copy names
-  or implies this suspect.
+  faint sweet almond-like scent lingering fits the hidden method or
+  motive connected to Eleanor Vance; has a complete
+  means/motive/opportunity profile.
+  - Dr. Elias Thorne (interviewed): suspicion 2/5 — half-empty bottle of
+  Chloral Hydrate raises questions about this suspect; half-empty bottle
+  of Chloral Hydrate names or implies this suspect.
+  - Lady Beatrice Finch (interviewed): suspicion 0/5 — no direct
+  evidence logged yet.
+  - Arthur Davies (interviewed): suspicion 0/5 — no direct evidence
+  logged yet.
+
+  You have enough evidence to accuse. Strongest current lead: Eleanor
+  Vance.
+  Try: accuse Eleanor Vance
+
+  Suggested next step:
+  You have enough evidence to make an accusation. Review CASE or
+  SUSPECTS if needed, then try: accuse Eleanor Vance.
+
+────────────────────────────────────────
+
+  > accuse dr. elias thorne
+  ...
+  You accuse Dr. Elias Thorne, but the evidence does not hold together.
+  The weak point is opportunity: the timing evidence still needs to
+  place Dr. Elias Thorne near Lord Finch during the critical window.
+  The clue pointing toward Dr. Elias Thorne (half-empty bottle of
+  Chloral Hydrate) may be circumstantial or misleading.
+  Your strongest evidence so far is: small ornate silver locket, faint
+  sweet almond-like scent lingering.
+  Type CASE or SUSPECTS to review the reasoning, then accuse the suspect
+  with the strongest means, motive, and opportunity chain.
+
+────────────────────────────────────────
+
+  > close bag
+  ...
+  **Dr. Thorne's Guest Room** (you've been here before)
+  A sparsely furnished guest room, neat but impersonal, with a single
+  window overlooking the manor grounds. A worn leather medical bag sits
+  on a small bedside table.
+  Exits: east → Upper Manor Hallway
+  Objects here: nothing of note
+  People here: no one
+
+    *You have enough evidence to make an accusation. Review CASE or
+  SUSPECTS if needed, then try: accuse Eleanor Vance.*
+
+────────────────────────────────────────
+
+  > go east
+  ...
+  **Upper Manor Hallway** (you've been here before)
+  A quiet, carpeted hallway on an upper floor, lined with closed doors.
+  The air is still, and faint light filters in from unseen windows.
+  Exits: south → Grand Staircase Landing, east → Lady Beatrice's Sitting
+  Room, west → Dr. Thorne's Guest Room
+  Objects here: nothing of note
+  People here: Arthur Davies (Lord Finch's Head Butler)
+
+────────────────────────────────────────
+
+  > go south
+  ...
+  **Grand Staircase Landing** (you've been here before)
+  The ornate grand staircase ascends to a landing, adorned with a large,
+  dusty tapestry depicting a hunting scene. A sense of faded grandeur
+  lingers here, with doors leading off to upper chambers.
+  Exits: down → Grand Entrance Hall, north → Upper Manor Hallway
+  Objects here: nothing of note
+  People here: no one
+
+────────────────────────────────────────
+
+  > go down
+  ...
+  **Grand Entrance Hall** (you've been here before)
+  The imposing entrance hall of Blackwood Manor, echoing with forgotten
+  footsteps. A grand staircase ascends into shadow, and heavy oak doors
+  lead further into the estate.
+  Exits: east → Manor's Common Area, up → Grand Staircase Landing
+  Objects here: brass house key
+  People here: no one
+
+────────────────────────────────────────
+
+  > go east
+  ...
+  **Manor's Common Area** (you've been here before)
+  A spacious lounge, once vibrant, now feels heavy with unspoken
+  secrets. Dust motes dance in the faint light from tall windows
+  overlooking overgrown gardens.
+  Exits: west → Grand Entrance Hall, north → Dusty Main Corridor, east →
+  Library Eleanor's Desk
+  Objects here: nothing of note
+  People here: Lady Beatrice Finch (Lord Finch's Estranged Wife)
+
+────────────────────────────────────────
+
+  > go east
+  ...
+  **Library Eleanor's Desk**
+  The vast library, shelves overflowing with ancient tomes and forgotten
+  manuscripts. A specific desk, clearly Eleanor Vance's, is covered in
+  research notes and open books.
+  Exits: west → Manor's Common Area
+  Objects here: suspicious residue
+  People here: no one
+
+────────────────────────────────────────
+
+  > examine suspicious residue
+  ...
+  You examine the suspicious residue. A hidden compartment in Eleanor
+  Vance's desk in the library, containing a small, empty glass vial with
+  residue that, when tested, matches the almond scent from the
+  handkerchief.
+  This connects to how Lord Finch died. It is consistent with Eleanor
+  Vance's method and is worth comparing against their alibi.
+
+EVIDENCE LOGGED: suspicious residue
+     A hidden compartment in Eleanor Vance's desk in the library,
+     containing a small, empty glass vial with residue that, when
+     tested, matches the almond scent from the handkerchief.
+     Clues found: 4 | Enough evidence to accuse
+     You have enough evidence to make an accusation. Type CASE or
+     SUSPECTS to review the evidence board. Strongest current lead:
+     Eleanor Vance. Try: accuse Eleanor Vance
+
+────────────────────────────────────────
+
+  > case
+  ...
+  Detective's case board
+
+  Evidence logged:
+  1. small ornate silver locket — strong case evidence. A small, ornate
+  silver locket, slightly tarnished, found partially hidden under Lord
+  Finch's study desk. Inside, it contains a faded photograph of a young
+  girl and a tiny, almost illegible inscription: 'E.V.' This connects to
+  how Lord Finch was killed: it is consistent with Eleanor Vance's
+  method and warrants closer scrutiny of their access.
+  2. faint sweet almond-like scent lingering — strong case evidence. A
+  faint, sweet almond-like scent lingering on a discarded, embroidered
+  handkerchief found near the study's back entrance. This scent is
+  characteristic of Belladonna. This connects to how Lord Finch was
+  killed: it is consistent with Eleanor Vance's method and warrants
+  closer scrutiny of their access.
+  3. half-empty bottle of Chloral Hydrate — circumstantial lead. A half-
+  empty bottle of Chloral Hydrate, a potent sedative, found in Dr.
+  Thorne's medical bag, along with a syringe. The evidence directly
+  names or references Dr. Elias Thorne, though further investigation
+  will show this is circumstantial. What appears to implicate them has
+  an innocent explanation.
+  4. suspicious residue — strong case evidence. A hidden compartment in
+  Eleanor Vance's desk in the library, containing a small, empty glass
+  vial with residue that, when tested, matches the almond scent from the
+  handkerchief. This connects to how Lord Finch was killed: it is
+  consistent with Eleanor Vance's method and warrants closer scrutiny of
+  their access.
+
+  Suspect board:
+  - Eleanor Vance (interviewed): suspicion 5/5 — small ornate silver
+  locket fits the hidden method or motive connected to Eleanor Vance;
+  faint sweet almond-like scent lingering fits the hidden method or
+  motive connected to Eleanor Vance; suspicious residue looks like means
+  or a delivery mechanism connected to Eleanor Vance.
+  - Dr. Elias Thorne (interviewed): suspicion 2/5 — half-empty bottle of
+  Chloral Hydrate raises questions about this suspect; half-empty bottle
+  of Chloral Hydrate names or implies this suspect.
+  - Lady Beatrice Finch (interviewed): suspicion 0/5 — no direct
+  evidence logged yet.
   - Arthur Davies (interviewed): suspicion 0/5 — no direct evidence
   logged yet.
 
@@ -529,8 +640,8 @@ CASE SOLVED
   returned to the library, feigning work on new acquisitions, confident
   her alibi would hold, unaware she had left a trail of subtle clues.
 
-  Turns taken: 36
-  Clues found: 3
-  DM interventions: 1
+  Turns taken: 40
+  Clues found: 4
+  DM interventions: 3
 
- Game log saved → C:\Users\liumu\Documents\school\spring2026\cs7634\sly-fox\output\game_log_20260502_131219.json
+ Game log saved → C:\Users\liumu\Documents\school\spring2026\cs7634\sly-fox\output\game_log_20260502_132642.json
