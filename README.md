@@ -44,6 +44,229 @@ Commands are not menu-based. Short, natural-language commands work best.
 
 ---
 
+## Walkthrough Guide
+An entire walkthrough of the interactive game from start to end is in the `walkthrough.txt` file. 
+
+*Note: the transcript of the original walkthrough shown in the demo video was lost, so the walkthrough here does not match the one in the demo video exactly. However, all required elements (e.g., DM intervention) are still present in this walkthrough and much of the story remains the same.*
+
+### Story setup
+At the beginning, we are told the opening scene, our identity, and our starting location. At each location, we are given other locations we can move to, objects to interact with, and people that we can talk to. The player types their chosen action preceded by the `>` prompt character. In the case below, the player chooses to go east into the **Manor's Common Area**.
+
+```
+  **Grand Entrance Hall**
+  The imposing entrance hall of Blackwood Manor, echoing with forgotten
+  footsteps. A grand staircase ascends into shadow, and heavy oak doors
+  lead further into the estate.
+  Exits: east → Manor's Common Area, up → Grand Staircase Landing
+  Objects here: brass house key
+  People here: no one
+
+
+────────────────────────────────────────
+
+  > go east
+```
+
+### Interact with NPCs
+At any location, if an NPC is present, we can choose to talk to them. 
+
+```
+  **Dusty Main Corridor**
+  A long, winding corridor lined with faded portraits of stern-faced
+  ancestors. The air is still and carries a faint scent of old wood and
+  dust.
+  Exits: south → Manor's Common Area, west → Dim Security Office, east →
+  Victim's Private Office, north → Back Corridor Near Study
+  Objects here: nothing of note
+  People here: Eleanor Vance (Researcher)
+
+────────────────────────────────────────
+
+  > talk to eleanor
+  ...
+  Eleanor Vance remains composed, giving you a measured answer.
+  "I was in the library organizing a newly arrived collection of rare
+  medieval manuscripts, a task that would keep my isolated and away from
+  the main drawing-room during the time of the murder."
+  Eleanor Vance adds, "Lord Finch and I had history, but that does not
+  make me a murderer."
+  Eleanor Vance adds, "If you doubt me, check who saw me and when. I had
+  no reason to leave my work to harm Lord Finch."
+```
+### Getting unstuck
+If a player has "wandered around" for too long without doing anything significant, the Drama Manager provides a hint for where to find the next clue.
+
+```
+  > go west
+  ...
+  **Dim Security Office**
+  A small, cluttered room filled with outdated surveillance equipment.
+  Monitors flicker with static, casting an eerie glow on forgotten
+  files.
+  Exits: east → Dusty Main Corridor
+  Objects here: nothing of note
+  People here: Dr. Elias Thorne (Lord Finch's Personal Physician)
+
+    *Next lead: go east, then go north, then go north to reach Lord
+  Finch's Study Entrance, then examine the small ornate silver locket.*
+```
+
+### Examining objects
+Players may examine any objects that are present at a location and log them as evidence.
+
+```
+  **Lord Finch's Study Entrance**
+  The grand study of Lord Finch, filled with leather-bound books and a
+  heavy oak desk. A faint scent of brandy lingers in the air, and a
+  large, ornate decanter sits prominently.
+  Exits: south → Back Corridor Near Study
+  Objects here: small ornate silver locket
+  People here: no one
+
+────────────────────────────────────────
+
+  > examine small ornate silver locket
+  ...
+  You examine the small ornate silver locket. A small, ornate silver
+  locket, slightly tarnished, found partially hidden under Lord Finch's
+  study desk. Inside, it contains a faded photograph of a young girl and
+  a tiny, almost illegible inscription: 'E.V.'
+  This connects to how Lord Finch died. It is consistent with Eleanor
+  Vance's method and is worth comparing against their alibi.
+
+EVIDENCE LOGGED: small ornate silver locket
+     A small, ornate silver locket, slightly tarnished, found partially
+     hidden under Lord Finch's study desk. Inside, it contains a faded
+     photograph of a young girl and a tiny, almost illegible
+     inscription: 'E.V.'
+     Clues found: 1 | Need 2 more to make accusation
+```
+
+### DM Intervention for Exceptional Action
+If a player wants to perform an exceptional (story-breaking) action, then the DM will prevent them from doing so.
+
+```
+  > destroy the silver locket
+  ...
+  You consider trying to 'destroy the silver locket' but aren't sure
+  how.
+```
+
+### DM Allowance for Consistent Action
+If a player's action does not harm the story, the DM allows it to happen.
+
+```
+  > take a nap
+  ...
+  Time passes. The hum of the facility continues.
+```
+
+### Block early accusation
+The DM ensures that the player has enough evidence before accusing someone.
+
+```
+  > accuse eleanor vance
+  ...
+  You are not ready to make an accusation yet. You have 1 clue(s), but
+  you need 3. Use HINT for the next lead, or CASE / SUSPECTS to review
+  what you know so far.
+```
+
+### Review Case
+The player can review everything they've gathered so far.
+
+```
+  > case
+  ...
+  Detective's case board
+
+  Evidence logged:
+  1. small ornate silver locket — strong case evidence. A small, ornate
+  silver locket, slightly tarnished, found partially hidden under Lord
+  Finch's study desk. Inside, it contains a faded photograph of a young
+  girl and a tiny, almost illegible inscription: 'E.V.' This connects to
+  how Lord Finch was killed: it is consistent with Eleanor Vance's
+  method and warrants closer scrutiny of their access.
+  2. faint sweet almond-like scent lingering — strong case evidence. A
+  faint, sweet almond-like scent lingering on a discarded, embroidered
+  handkerchief found near the study's back entrance. This scent is
+  characteristic of Belladonna. This connects to how Lord Finch was
+  killed: it is consistent with Eleanor Vance's method and warrants
+  closer scrutiny of their access.
+  3. half-empty bottle of Chloral Hydrate — circumstantial lead. A half-
+  empty bottle of Chloral Hydrate, a potent sedative, found in Dr.
+  Thorne's medical bag, along with a syringe. The evidence directly
+  names or references Dr. Elias Thorne, though further investigation
+  will show this is circumstantial. What appears to implicate them has
+  an innocent explanation.
+
+  Suspect board:
+  - Eleanor Vance (interviewed): suspicion 5/5 — small ornate silver
+  locket fits the hidden method or motive connected to Eleanor Vance;
+  faint sweet almond-like scent lingering fits the hidden method or
+  motive connected to Eleanor Vance; has a complete
+  means/motive/opportunity profile.
+  - Dr. Elias Thorne (interviewed): suspicion 2/5 — half-empty bottle of
+  Chloral Hydrate raises questions about this suspect; half-empty bottle
+  of Chloral Hydrate names or implies this suspect.
+  - Lady Beatrice Finch (interviewed): suspicion 0/5 — no direct
+  evidence logged yet.
+  - Arthur Davies (interviewed): suspicion 0/5 — no direct evidence
+  logged yet.
+
+  You have enough evidence to accuse. Strongest current lead: Eleanor
+  Vance.
+  Try: accuse Eleanor Vance
+
+  Suggested next step:
+  You have enough evidence to make an accusation. Review CASE or
+  SUSPECTS if needed, then try: accuse Eleanor Vance.
+```
+### Insufficient accusation
+```
+  > accuse dr. elias thorne
+  ...
+  You accuse Dr. Elias Thorne, but the evidence does not hold together.
+  The weak point is opportunity: the timing evidence still needs to
+  place Dr. Elias Thorne near Lord Finch during the critical window.
+  The clue pointing toward Dr. Elias Thorne (half-empty bottle of
+  Chloral Hydrate) may be circumstantial or misleading.
+  Your strongest evidence so far is: small ornate silver locket, faint
+  sweet almond-like scent lingering.
+  Type CASE or SUSPECTS to review the reasoning, then accuse the suspect
+  with the strongest means, motive, and opportunity chain.
+```
+
+### Final accusation
+```
+  > accuse eleanor vance
+  ...
+  You lay out the evidence piece by piece until Eleanor Vance has
+  nowhere left to hide. The final reconstruction is now clear.
+
+================================================================
+CASE SOLVED
+================================================================
+
+    You've done it. Eleanor Vance is under arrest.
+
+    THE TRUTH:
+    Eleanor Vance harbored a deep-seated vendetta against Lord Alistair
+  Finch. Years ago, Finch's ruthless business tactics had deliberately
+  ruined her family's esteemed publishing house, driving her father to
+  despair and ultimately suicide. Eleanor, then a young girl, vowed
+  revenge. She meticulously planned her infiltration into Blackwood
+  Manor as the librarian, patiently waiting for her opportunity. On the
+  night of the murder, she seized the moment during a brief power
+  flicker, knowing it would provide the perfect cover. Slipping into
+  Finch's study, she quickly administered a potent Belladonna extract
+  into his brandy, a poison she had researched extensively. She then
+  returned to the library, feigning work on new acquisitions, confident
+  her alibi would hold, unaware she had left a trail of subtle clues.
+```
+
+---
+
 ## Requirements
 
 - Python 3.10 or newer recommended
